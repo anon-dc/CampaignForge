@@ -1,0 +1,3682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampaignForge · Bulk Email &amp; SMS</title>
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEhUfmIpL1PPq6SxhiGH9ZExJtI4Soa56U7tt2bOus6jbYDY6IjgXOmiwFqyyYJTemBlJ4RQxlAWE2wil2hqmJV28U0Ab8vqRqdcZS8cKJ15lxWruHN60PNXyjHZzIuogccNIs3Um2t94vie_OibXehW4yTHXg6ItgD5NShWeTJxHCjmFUwEXW_G5LTn6ycU">
+  <link rel="shortcut icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEhUfmIpL1PPq6SxhiGH9ZExJtI4Soa56U7tt2bOus6jbYDY6IjgXOmiwFqyyYJTemBlJ4RQxlAWE2wil2hqmJV28U0Ab8vqRqdcZS8cKJ15lxWruHN60PNXyjHZzIuogccNIs3Um2t94vie_OibXehW4yTHXg6ItgD5NShWeTJxHCjmFUwEXW_G5LTn6ycU">
+  <style>
+    /* ============================================
+   COMPLETE CSS - ALL DEVICE RESPONSIVE
+   With Proper Margins & Gaps Across All Tabs
+   ============================================ */
+
+/* ── DESIGN TOKENS ─────────────────────────── */
+:root {
+    --bg: #f8f9fc;
+    --surface: #ffffff;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --border2: #cbd5e1;
+    --accent: #4f8ef7;
+    --accent2: #7c3aed;
+    --green: #10b981;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --cyan: #06b6d4;
+    --text: #1e293b;
+    --muted: #64748b;
+    --muted2: #94a3b8;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --display: 'Syne', sans-serif;
+    --shadow: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.08);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --sidebar-width: 260px;
+    --sidebar-collapsed: 72px;
+}
+
+/* ── DARK MODE ──────────────────────────────── */
+.dark-mode {
+    --bg: #0b0d12;
+    --surface: #11141c;
+    --card: #161a25;
+    --border: #1f2430;
+    --border2: #2a3040;
+    --text: #e8eaf2;
+    --muted: #6b7280;
+    --muted2: #9ca3af;
+    --shadow: 0 1px 3px rgba(0,0,0,0.35);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.5);
+}
+
+/* ── BASE ───────────────────────────────────── */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html {
+    height: 100%;
+    scroll-behavior: smooth;
+}
+body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: background-color 0.35s ease, color 0.25s ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── SCROLLBAR ──────────────────────────────── */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border2);
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--muted);
+}
+.dark-mode ::-webkit-scrollbar-thumb {
+    background: #2a3040;
+}
+.dark-mode ::-webkit-scrollbar-thumb:hover {
+    background: #3a4050;
+}
+
+/* ── SELECTION ──────────────────────────────── */
+::selection {
+    background: var(--accent);
+    color: #fff;
+}
+::-moz-selection {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* ── TOPBAR ──────────────────────────────────── */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 58px;
+    min-height: 58px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    box-shadow: var(--shadow);
+    position: relative;
+    z-index: 10;
+}
+
+.logo {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.logo-icon {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #fff;
+}
+
+.topbar-stats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.tstat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+.tstat:hover {
+    border-color: var(--border2);
+    background: var(--surface);
+    transform: translateY(-1px);
+}
+.tstat strong {
+    color: var(--text);
+    font-family: var(--mono);
+    font-weight: 600;
+}
+.tstat i {
+    font-size: 13px;
+    transition: color 0.2s;
+}
+.tstat .fa-server {
+    color: var(--cyan);
+}
+.tstat .fa-users {
+    color: var(--accent2);
+}
+.tstat .fa-circle-check {
+    color: var(--green);
+}
+.tstat .fa-circle-xmark {
+    color: var(--red);
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    transition: background 0.3s, box-shadow 0.3s;
+}
+.pulse-dot.sending {
+    background: var(--amber);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+    animation: pulse 1.2s infinite ease-in-out;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.75); }
+}
+
+/* ── THEME TOGGLE ───────────────────────────── */
+.theme-toggle {
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+    color: var(--muted);
+    margin-left: 12px;
+}
+.theme-toggle:hover {
+    background: var(--surface);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 12px rgba(79, 142, 247, 0.15);
+}
+.theme-toggle svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ── SIDEBAR TOGGLE ─────────────────────────── */
+.sidebar-toggle {
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+    color: var(--muted);
+    margin-right: 8px;
+}
+.sidebar-toggle:hover {
+    background: var(--surface);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.sidebar-toggle svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ── LAYOUT ──────────────────────────────────── */
+.layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ── SIDEBAR ────────────────────────────────── */
+.sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-shrink: 0;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed);
+    min-width: var(--sidebar-collapsed);
+}
+.sidebar.collapsed .nav-label,
+.sidebar.collapsed .nav-btn .nav-text,
+.sidebar.collapsed .nav-divider,
+.sidebar.collapsed .sidebar-bottom-text {
+    display: none;
+}
+.sidebar.collapsed .nav-btn {
+    justify-content: center;
+    padding: 9px;
+    gap: 0;
+}
+.sidebar.collapsed .nav-btn .ico {
+    font-size: 20px;
+    margin: 0;
+}
+.sidebar.collapsed .nav-btn::before {
+    display: none;
+}
+.sidebar.collapsed .sidebar-bottom {
+    justify-content: center;
+    padding: 12px 0;
+}
+.sidebar.collapsed .sidebar-bottom .sidebar-bottom-icon {
+    margin-right: 0;
+}
+.sidebar.collapsed .nav-btn:hover .nav-text {
+    display: inline;
+    position: absolute;
+    left: calc(var(--sidebar-collapsed) + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--surface);
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    white-space: nowrap;
+    z-index: 100;
+    font-size: 13px;
+    color: var(--text);
+}
+
+.sidebar-bottom {
+    margin-top: auto;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--muted);
+}
+.sidebar-bottom-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+.sidebar-bottom-text {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.nav-section {
+    padding: 0 10px;
+    margin-bottom: 6px;
+}
+.nav-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 12px 6px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+.nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted2);
+    transition: var(--transition);
+    border: 1px solid transparent;
+    background: none;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    overflow: visible;
+}
+.nav-btn .nav-text {
+    transition: opacity 0.2s;
+    white-space: nowrap;
+}
+.nav-btn::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 0 3px 3px 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.nav-btn:hover {
+    background: var(--card);
+    color: var(--text);
+    border-color: var(--border);
+}
+.nav-btn:hover::before {
+    opacity: 0.3;
+}
+.nav-btn.active {
+    background: linear-gradient(90deg, rgba(79, 142, 247, 0.12), rgba(79, 142, 247, 0.03));
+    color: var(--accent);
+    border-color: rgba(79, 142, 247, 0.2);
+}
+.nav-btn.active::before {
+    opacity: 1;
+}
+.nav-btn .ico {
+    width: 20px;
+    text-align: center;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+.nav-btn .ico svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.nav-btn:hover .ico {
+    transform: scale(1.1);
+}
+.nav-btn.active .ico {
+    color: var(--accent);
+}
+
+.nav-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 10px 16px;
+}
+
+/* ── MAIN CONTENT ───────────────────────────── */
+.main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.panel {
+    display: none;
+}
+.panel.active {
+    display: contents;
+}
+
+/* ── CARDS ──────────────────────────────────── */
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+.card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--border2);
+}
+.card-title {
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    flex-wrap: wrap;
+}
+.card-title svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+.card-title .badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+    margin-left: auto;
+}
+
+.badge-blue { background: rgba(79, 142, 247, 0.12); color: var(--accent); }
+.badge-green { background: rgba(16, 185, 129, 0.12); color: var(--green); }
+.badge-amber { background: rgba(245, 158, 11, 0.12); color: var(--amber); }
+.badge-red { background: rgba(239, 68, 68, 0.12); color: var(--red); }
+.badge-purple { background: rgba(124, 58, 237, 0.12); color: #a78bfa; }
+.badge-pink { background: rgba(236, 72, 153, 0.12); color: #ec4899; }
+.badge-teal { background: rgba(20, 184, 166, 0.12); color: #14b8a6; }
+
+/* ── GRIDS ──────────────────────────────────── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+
+/* ── FORMS ──────────────────────────────────── */
+label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted2);
+    margin-bottom: 6px;
+}
+
+input, select, textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    transition: var(--transition);
+    outline: none;
+}
+
+input:hover, select:hover, textarea:hover {
+    border-color: var(--muted2);
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.1);
+}
+
+select option {
+    background: var(--surface);
+    color: var(--text);
+}
+
+textarea {
+    resize: vertical;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.field {
+    margin-bottom: 16px;
+}
+
+.field-row {
+    display: flex;
+    gap: 12px;
+}
+
+.field-row .field {
+    flex: 1;
+}
+
+/* ── BUTTONS ────────────────────────────────── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+    font-family: var(--sans);
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+.btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.btn:hover::after {
+    opacity: 1;
+}
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent), #3b7de4);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(79, 142, 247, 0.25);
+}
+.btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #5a9af8, var(--accent));
+    box-shadow: 0 4px 16px rgba(79, 142, 247, 0.35);
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--green), #059669);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+.btn-success:hover:not(:disabled) {
+    background: linear-gradient(135deg, #34d399, var(--green));
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--red), #dc2626);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+}
+.btn-danger:hover:not(:disabled) {
+    background: linear-gradient(135deg, #f87171, var(--red));
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+    transform: translateY(-1px);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--muted2);
+    border: 1px solid var(--border2);
+}
+.btn-ghost:hover:not(:disabled) {
+    background: var(--surface);
+    color: var(--text);
+    border-color: var(--border2);
+    transform: translateY(-1px);
+}
+
+.btn-amber {
+    background: linear-gradient(135deg, var(--amber), #d97706);
+    color: #000;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+}
+.btn-amber:hover:not(:disabled) {
+    background: linear-gradient(135deg, #fbbf24, var(--amber));
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
+    transform: translateY(-1px);
+}
+
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.btn-xs { padding: 4px 10px; font-size: 10px; }
+.btn-full { width: 100%; }
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ── TOGGLE SWITCH ──────────────────────────── */
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+}
+.toggle-row:hover {
+    background: rgba(79, 142, 247, 0.02);
+    margin: 0 -12px;
+    padding: 12px;
+    border-radius: 8px;
+}
+.toggle-row:last-child {
+    border-bottom: none;
+}
+.toggle-info {
+    display: flex;
+    flex-direction: column;
+}
+.toggle-info span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+}
+.toggle-info small {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.4;
+}
+.toggle {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+}
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.toggle-slider {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    background: var(--border2);
+    border-radius: 20px;
+    transition: 0.25s;
+}
+.toggle-slider:before {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+    left: 3px;
+    top: 3px;
+    transition: 0.25s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+.toggle input:checked+.toggle-slider {
+    background: var(--accent);
+}
+.toggle input:checked+.toggle-slider:before {
+    transform: translateX(18px);
+}
+.toggle input:focus+.toggle-slider {
+    box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
+}
+
+/* ── STAT TILES ─────────────────────────────── */
+.stat-tile {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+}
+.stat-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+.stat-tile::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+}
+.stat-tile.blue::before { background: linear-gradient(90deg, var(--accent), #3b82f6); }
+.stat-tile.green::before { background: linear-gradient(90deg, var(--green), #22c55e); }
+.stat-tile.red::before { background: linear-gradient(90deg, var(--red), #f87171); }
+.stat-tile.amber::before { background: linear-gradient(90deg, var(--amber), #fbbf24); }
+.stat-tile.purple::before { background: linear-gradient(90deg, var(--accent2), #a78bfa); }
+.stat-tile.pink::before { background: linear-gradient(90deg, #ec4899, #f472b6); }
+.stat-tile.teal::before { background: linear-gradient(90deg, #14b8a6, #2dd4bf); }
+.stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+.stat-value {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--text), var(--muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.stat-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+}
+
+/* ── PROGRESS ────────────────────────────────── */
+.progress-wrap {
+    margin: 14px 0;
+}
+.progress-bar {
+    height: 6px;
+    background: var(--border2);
+    border-radius: 10px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 2px;
+    position: relative;
+}
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
+    animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+    0% { transform: translateX(-20px); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(20px); opacity: 0; }
+}
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-family: var(--mono);
+}
+
+/* ── LOG FEED ────────────────────────────────── */
+.log-feed {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 8px 12px;
+}
+.log-entry {
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    animation: logIn 0.2s ease;
+}
+@keyframes logIn {
+    from { opacity: 0; transform: translateX(-5px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.dark-mode .log-entry {
+    border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+.log-time {
+    color: var(--muted);
+    flex-shrink: 0;
+    font-size: 10px;
+    opacity: 0.8;
+}
+.log-msg {
+    color: var(--muted2);
+    word-break: break-all;
+    line-height: 1.4;
+}
+.log-msg.ok { color: var(--green); }
+.log-msg.err { color: var(--red); }
+.log-msg.warn { color: var(--amber); }
+.log-msg.info { color: var(--accent); }
+
+/* ── SMTP LIST ───────────────────────────────── */
+.smtp-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 280px;
+    overflow-y: auto;
+}
+.smtp-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 12px;
+    transition: var(--transition);
+    flex-wrap: wrap;
+}
+.smtp-row:hover {
+    border-color: var(--border2);
+    background: var(--card);
+    transform: translateX(2px);
+}
+.smtp-health-bar {
+    flex: 1;
+    height: 5px;
+    background: var(--border2);
+    border-radius: 10px;
+    overflow: hidden;
+    min-width: 60px;
+}
+.smtp-health-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease, background 0.3s;
+}
+.smtp-email {
+    font-family: var(--mono);
+    color: var(--muted2);
+    flex: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+}
+.smtp-server {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    flex: 2;
+}
+
+/* ── CAMPAIGN TABLE ─────────────────────────── */
+.camp-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 12px;
+}
+.camp-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.camp-table td {
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+}
+.camp-table tbody tr {
+    transition: var(--transition);
+}
+.camp-table tbody tr:hover td {
+    background: rgba(79, 142, 247, 0.04);
+}
+.camp-table tr:last-child td {
+    border-bottom: none;
+}
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.status-pill.done { background: rgba(16, 185, 129, 0.1); color: var(--green); }
+.status-pill.running {
+    background: rgba(79, 142, 247, 0.1);
+    color: var(--accent);
+    animation: runningPulse 2s infinite;
+}
+@keyframes runningPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(79, 142, 247, 0.2); }
+    50% { box-shadow: 0 0 0 4px rgba(79, 142, 247, 0); }
+}
+.status-pill.draft { background: rgba(107, 114, 128, 0.1); color: var(--muted2); }
+.status-pill.paused { background: rgba(245, 158, 11, 0.1); color: var(--amber); }
+.status-pill.scheduled { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+
+/* ── TABS ────────────────────────────────────── */
+.tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 18px;
+}
+.tab-btn {
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--muted2);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: var(--transition);
+    font-family: var(--sans);
+    position: relative;
+}
+.tab-btn:hover {
+    color: var(--text);
+    background: rgba(79, 142, 247, 0.04);
+    border-radius: 8px 8px 0 0;
+}
+.tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+.tab-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+.tab-pane {
+    display: none;
+}
+.tab-pane.active {
+    display: block;
+    animation: fadeIn 0.25s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── WHITELIST ───────────────────────────────── */
+.whitelist-panel {
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-top: 14px;
+}
+.whitelist-panel h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--amber);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.ip-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+.ip-chip {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--cyan);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.ip-chip:hover {
+    background: var(--card);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateX(3px);
+}
+.whitelist-docs {
+    font-size: 11px;
+    color: var(--muted2);
+}
+.whitelist-docs a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+}
+.whitelist-docs a:hover {
+    text-decoration: underline;
+}
+
+/* ── CHANNEL SELECTOR ───────────────────────── */
+.channel-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.channel-btn {
+    flex: 1;
+    padding: 14px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 2px solid var(--border2);
+    background: var(--surface);
+    text-align: center;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    min-width: 80px;
+}
+.channel-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(79, 142, 247, 0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.channel-btn:hover {
+    border-color: var(--border2);
+    background: var(--card);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+.channel-btn:hover::before {
+    opacity: 1;
+}
+.channel-btn.active {
+    border-color: var(--accent);
+    background: rgba(79, 142, 247, 0.06);
+    box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.08);
+}
+.channel-btn .ch-ico {
+    font-size: 22px;
+    margin-bottom: 6px;
+    transition: transform 0.2s;
+}
+.channel-btn .ch-ico svg {
+    width: 28px;
+    height: 28px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: block;
+    margin: 0 auto;
+}
+.channel-btn:hover .ch-ico {
+    transform: scale(1.15);
+}
+.channel-btn .ch-lbl {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+}
+.channel-btn .ch-sub {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+#ch-email .ch-ico svg { stroke: #3b82f6; }
+#ch-sms .ch-ico svg { stroke: #22c55e; }
+#ch-both .ch-ico svg { stroke: #a855f7; }
+
+/* ── SMS CARRIER CARD ───────────────────────── */
+#smsCarrierCard {
+    animation: fadeIn 0.3s ease;
+}
+#smsCarrierCard .field-row {
+    display: flex;
+    gap: 12px;
+}
+#smsCarrierCard .field-row .field {
+    flex: 1;
+}
+#smsCarrierCard select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    font-family: var(--sans);
+    transition: var(--transition);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%2364748b'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+#smsCarrierCard select:hover {
+    border-color: var(--muted2);
+}
+#smsCarrierCard select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.1);
+}
+#smsCarrierCard select option {
+    background: var(--surface);
+    color: var(--text);
+    padding: 8px;
+}
+
+/* ── CARRIER PREVIEW ────────────────────────── */
+#carrierPreview {
+    animation: fadeIn 0.3s ease;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    margin-top: 12px;
+}
+#carrierPreviewContent {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted2);
+    line-height: 1.8;
+}
+#carrierPreviewContent .preview-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 12px;
+    align-items: baseline;
+}
+#carrierPreviewContent .preview-label {
+    color: var(--muted);
+    font-weight: 500;
+}
+#carrierPreviewContent .preview-value {
+    color: var(--text);
+    word-break: break-all;
+}
+#carrierPreviewContent .preview-value.converted {
+    color: var(--green);
+    font-weight: 600;
+}
+#carrierPreviewContent .preview-value.gateway {
+    color: var(--cyan);
+}
+#carrierPreviewContent .preview-note {
+    margin-top: 6px;
+    font-size: 10px;
+    color: var(--muted2);
+    font-family: var(--sans);
+}
+#carrierPreviewContent .preview-note code {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--cyan);
+}
+
+/* ── DROP ZONE ───────────────────────────────── */
+.drop-zone {
+    border: 2px dashed var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    background: rgba(79, 142, 247, 0.02);
+}
+.drop-zone:hover,
+.drop-zone.dragover {
+    border-color: var(--accent);
+    background: rgba(79, 142, 247, 0.06);
+    transform: scale(1.01);
+}
+.drop-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+.drop-zone .drop-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: var(--muted2);
+    transition: var(--transition);
+}
+.drop-zone .drop-icon svg {
+    width: 40px;
+    height: 40px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: block;
+    margin: 0 auto;
+}
+.drop-zone:hover .drop-icon {
+    color: var(--accent);
+    transform: scale(1.1);
+}
+.drop-zone .drop-text {
+    font-size: 12px;
+    color: var(--muted2);
+    line-height: 1.5;
+}
+.drop-zone .drop-text strong {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* ── RECIPIENTS TABLE ───────────────────────── */
+#recipientsListCard {
+    animation: fadeIn 0.3s ease;
+}
+#recipientsTableContainer {
+    scrollbar-width: thin;
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+}
+#recipientsTableContainer::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+#recipientsTableContainer::-webkit-scrollbar-track {
+    background: var(--bg);
+    border-radius: 4px;
+}
+#recipientsTableContainer::-webkit-scrollbar-thumb {
+    background: var(--border2);
+    border-radius: 4px;
+}
+#recipientsTableContainer::-webkit-scrollbar-thumb:hover {
+    background: var(--muted);
+}
+#recipientsTable {
+    width: 100%;
+    font-size: 12px;
+    border-collapse: collapse;
+}
+#recipientsTable thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+#recipientsTable th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 2px solid var(--border);
+    background: var(--surface);
+}
+#recipientsTable td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    vertical-align: middle;
+}
+#recipientsTable tbody tr {
+    transition: var(--transition);
+}
+#recipientsTable tbody tr:hover td {
+    background: rgba(79, 142, 247, 0.04);
+}
+#recipientsTable tbody tr:last-child td {
+    border-bottom: none;
+}
+#recipientsTable .btn-xs {
+    padding: 4px 8px;
+    font-size: 10px;
+    min-width: 28px;
+    min-height: 28px;
+    border-radius: 6px;
+}
+#recipientsTable .btn-xs svg {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ── SEARCH INPUT ───────────────────────────── */
+#recipientSearchInput {
+    width: 180px;
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 6px;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    color: var(--text);
+    transition: var(--transition);
+    outline: none;
+    font-family: var(--sans);
+}
+#recipientSearchInput::placeholder {
+    color: var(--muted2);
+}
+#recipientSearchInput:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.1);
+}
+#recipientSearchInput:hover {
+    border-color: var(--muted2);
+}
+
+/* ── PAGINATION ─────────────────────────────── */
+#recipPageSize {
+    width: auto;
+    padding: 4px 8px;
+    font-size: 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    outline: none;
+    font-family: var(--sans);
+}
+#recipPageSize:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.1);
+}
+
+/* ── TEMPLATE CARDS ─────────────────────────── */
+.template-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+}
+.template-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+}
+.template-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+.template-card .template-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    margin-bottom: 8px;
+}
+.template-card .template-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text);
+}
+.template-card .template-desc {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+.template-card .template-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(79, 142, 247, 0.1);
+    color: var(--accent);
+}
+
+/* ── SEGMENT BADGES ─────────────────────────── */
+.segment-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+}
+.segment-badge.active { background: rgba(16, 185, 129, 0.1); color: var(--green); }
+.segment-badge.inactive { background: rgba(239, 68, 68, 0.1); color: var(--red); }
+.segment-badge.draft { background: rgba(107, 114, 128, 0.1); color: var(--muted2); }
+
+/* ── AUTOMATION ──────────────────────────────── */
+.automation-flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    overflow-x: auto;
+}
+.automation-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    white-space: nowrap;
+}
+.automation-step .step-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    color: var(--accent);
+}
+.automation-step .step-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+}
+.automation-arrow svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    color: var(--muted2);
+}
+
+/* ── SCHEDULER ───────────────────────────────── */
+.schedule-picker {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.schedule-picker input[type="datetime-local"] {
+    width: auto;
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+}
+
+/* ── EMPTY STATE ────────────────────────────── */
+.empty-state {
+    text-align: center;
+    padding: 36px 20px;
+    color: var(--muted2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.empty-state svg {
+    width: 42px;
+    height: 42px;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.35;
+    color: var(--muted2);
+    display: block;
+    margin: 0 auto 12px;
+}
+.empty-state p {
+    font-size: 13px;
+}
+.empty-text {
+    font-size: 12.5px;
+    color: var(--muted2);
+    font-weight: 500;
+}
+
+/* ── TOAST ───────────────────────────────────── */
+#toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+.toast {
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--card);
+    border: 1px solid var(--border2);
+    animation: toastIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 340px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-lg);
+    pointer-events: auto;
+    backdrop-filter: blur(8px);
+}
+.toast-success { border-color: rgba(16, 185, 129, 0.3); color: var(--green); background: rgba(16, 185, 129, 0.05); }
+.toast-error { border-color: rgba(239, 68, 68, 0.3); color: var(--red); background: rgba(239, 68, 68, 0.05); }
+.toast-info { border-color: rgba(79, 142, 247, 0.3); color: var(--accent); background: rgba(79, 142, 247, 0.05); }
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── SECTION HEADER ─────────────────────────── */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+.section-title {
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+}
+.section-title svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+.help-text {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 5px;
+    line-height: 1.6;
+}
+
+/* ── UTILITY ────────────────────────────────── */
+code {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--bg);
+    padding: 3px 8px;
+    border-radius: 6px;
+    color: var(--cyan);
+    border: 1px solid var(--border);
+    font-weight: 500;
+}
+.divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 18px 0;
+}
+
+/* ── THEME ICON ─────────────────────────────── */
+.theme-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+.theme-icon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    color: var(--text);
+    transition: color 0.3s ease;
+}
+.theme-toggle:hover .theme-icon svg {
+    color: var(--accent);
+}
+
+/* ── SVG ICON STYLES ────────────────────────── */
+.svg-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    flex-shrink: 0;
+    line-height: 1;
+}
+.svg-icon svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.toast-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+}
+.toast-icon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.toast-success .toast-icon svg { color: var(--green); }
+.toast-error .toast-icon svg { color: var(--red); }
+.toast-info .toast-icon svg { color: var(--accent); }
+
+/* ════════════════════════════════════════════════════════════
+   RESPONSIVE - ALL DEVICES WITH FIXED SPACING
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Large Desktops (1201px+) ───────────────── */
+@media (min-width: 1201px) {
+    .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── Desktops (992px - 1200px) ─────────────── */
+@media (max-width: 1200px) {
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .template-grid { grid-template-columns: 1fr 1fr 1fr; }
+    .topbar-stats .tstat { padding: 5px 10px; font-size: 11px; }
+    .topbar-stats .tstat strong { font-size: 12px; }
+}
+
+/* ── Tablets / Small Desktops (768px - 991px) ─ */
+@media (max-width: 991px) {
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .template-grid { grid-template-columns: 1fr 1fr; }
+    .stat-tile .stat-value { font-size: 22px; }
+    .sidebar { width: 200px; min-width: 200px; }
+    .sidebar.collapsed { width: var(--sidebar-collapsed); min-width: var(--sidebar-collapsed); }
+    .main { padding: 18px; gap: 16px; }
+    .card { padding: 18px; }
+    .topbar-stats .tstat { padding: 4px 8px; font-size: 10px; }
+    .topbar-stats .tstat strong { font-size: 11px; }
+    .topbar-stats { gap: 6px; }
+    .channel-selector { flex-wrap: wrap; }
+    .channel-btn { flex: 1 1 calc(33.33% - 10px); min-width: 100px; }
+    #smsCarrierCard .field-row { flex-direction: column; gap: 8px; }
+    #recipientSearchInput { width: 140px; }
+    .section-header { margin-bottom: 14px; }
+}
+
+/* ── Mobile (576px - 767px) ─────────────────── */
+@media (max-width: 767px) {
+    /* ── Layout ── */
+    .layout { flex-direction: column; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+        width: 100% !important;
+        min-width: auto !important;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 8px 12px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        height: auto;
+        min-height: 48px;
+        max-height: 48px;
+        align-items: center;
+        gap: 4px;
+    }
+    .sidebar::-webkit-scrollbar { height: 2px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+    .sidebar .nav-section {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        padding: 0;
+        margin: 0;
+        align-items: center;
+        flex-wrap: nowrap;
+    }
+    .sidebar .nav-label { display: none; }
+    .sidebar .nav-divider { display: none; }
+    .sidebar .nav-btn {
+        width: auto;
+        white-space: nowrap;
+        padding: 5px 10px;
+        font-size: 11px;
+        gap: 5px;
+        border-radius: 8px;
+    }
+    .sidebar .nav-btn .ico { font-size: 13px; width: 16px; }
+    .sidebar .nav-btn .nav-text { font-size: 10px; }
+    .sidebar .nav-btn::before { display: none; }
+    .sidebar .sidebar-bottom { display: none; }
+    .sidebar.collapsed {
+        width: 100% !important;
+        min-width: auto !important;
+        flex-direction: row;
+        padding: 8px 12px;
+    }
+    .sidebar.collapsed .nav-label,
+    .sidebar.collapsed .nav-btn .nav-text,
+    .sidebar.collapsed .nav-divider,
+    .sidebar.collapsed .sidebar-bottom-text {
+        display: inline !important;
+    }
+    .sidebar.collapsed .nav-btn {
+        justify-content: flex-start;
+        padding: 5px 10px;
+        gap: 5px;
+    }
+    .sidebar.collapsed .nav-btn .ico { font-size: 13px; }
+    .sidebar.collapsed .nav-btn:hover .nav-text {
+        display: inline !important;
+        position: static;
+        transform: none;
+        background: none;
+        padding: 0;
+        border: none;
+        box-shadow: none;
+    }
+    .sidebar-toggle { display: none !important; }
+
+    /* ── Topbar ── */
+    .topbar {
+        height: auto;
+        min-height: 48px;
+        padding: 6px 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        align-items: center;
+    }
+    .topbar .logo { font-size: 15px; gap: 6px; flex-shrink: 0; }
+    .topbar .logo .logo-icon { width: 24px; height: 24px; font-size: 11px; }
+    .topbar-stats {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: wrap;
+        flex: 1;
+        margin-left: auto;
+    }
+    .topbar-stats .tstat {
+        padding: 3px 6px;
+        font-size: 9px;
+        gap: 3px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+    }
+    .topbar-stats .tstat i { font-size: 9px; }
+    .topbar-stats .tstat strong { font-size: 9px; }
+    .topbar-stats .tstat .pulse-dot { width: 6px; height: 6px; }
+    .topbar-stats .tstat:nth-child(n+4) { display: none; }
+    .theme-toggle {
+        padding: 2px 6px;
+        font-size: 9px;
+        margin-left: 2px;
+        border-radius: 14px;
+    }
+    .theme-toggle svg { width: 11px; height: 11px; }
+    .theme-toggle span:last-child { font-size: 8px; }
+
+    /* ── Main Content ── */
+    .main {
+        padding: 10px;
+        gap: 14px;
+    }
+    .panel.active { display: block; }
+    .card {
+        padding: 12px;
+        border-radius: var(--radius-sm);
+        margin-bottom: 0;
+    }
+    .card-title {
+        font-size: 12px;
+        margin-bottom: 10px;
+    }
+    .card-title .badge { font-size: 8px; padding: 2px 6px; }
+
+    /* ── Grids ── */
+    .grid-4 {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .grid-4 .stat-tile { margin-bottom: 0; }
+    .grid-3 {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .template-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .template-grid .template-card { margin-bottom: 0; }
+
+    /* ── Stat Tiles ── */
+    .stat-tile { padding: 12px; }
+    .stat-tile .stat-value { font-size: 18px; }
+    .stat-tile .stat-label { font-size: 8px; }
+    .stat-tile .stat-sub { font-size: 9px; }
+
+    /* ── Section Header ── */
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+    .section-title { font-size: 16px; }
+    .section-title svg { width: 18px; height: 18px; }
+    .help-text { font-size: 10px; }
+
+    /* ── Buttons ── */
+    .btn { padding: 6px 12px; font-size: 11px; }
+    .btn-sm { padding: 4px 8px; font-size: 10px; }
+    .btn-xs { padding: 3px 6px; font-size: 9px; }
+    .btn svg { width: 0.8em; height: 0.8em; }
+    .btn-group { gap: 4px; }
+
+    /* ── Forms ── */
+    .field { margin-bottom: 10px; }
+    .field-row { flex-direction: column; gap: 8px; }
+    label { font-size: 10px; }
+    input, select, textarea { padding: 6px 8px; font-size: 11px; border-radius: 6px; }
+    textarea { font-size: 10px; }
+
+    /* ── Tabs ── */
+    .tabs {
+        gap: 2px;
+        margin-bottom: 12px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+    .tab-btn { padding: 5px 10px; font-size: 11px; white-space: nowrap; }
+    .tab-btn svg { width: 12px; height: 12px; }
+
+    /* ── Channel Selector ── */
+    .channel-selector {
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+    .channel-btn {
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+    }
+    .channel-btn .ch-ico { margin-bottom: 0; }
+    .channel-btn .ch-ico svg { width: 24px; height: 24px; }
+    .channel-btn .ch-lbl { font-size: 12px; }
+    .channel-btn .ch-sub { font-size: 9px; margin-top: 0; }
+
+    /* ── SMTP List ── */
+    .smtp-row {
+        flex-wrap: wrap;
+        padding: 8px 10px;
+        gap: 4px;
+        font-size: 10px;
+        margin-bottom: 4px;
+    }
+    .smtp-row .smtp-email { font-size: 9px; flex: 1 1 100%; order: 1; }
+    .smtp-row .smtp-server { font-size: 9px; flex: 1; order: 2; }
+    .smtp-row .smtp-health-bar { flex: 1 1 100%; order: 3; height: 4px; }
+    .smtp-row>span:not(.smtp-email):not(.smtp-server) { order: 4; font-size: 9px; }
+
+    /* ════════════════════════════════════════════
+       DASHBOARD TAB SPACING
+       ════════════════════════════════════════════ */
+    #activeCampaignCard { margin-bottom: 12px; }
+    .card:has(.smtp-list#smtpHealthList) {
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+    .card:has(.log-feed#logFeed) {
+        margin-top: 12px;
+        margin-bottom: 0;
+    }
+
+    /* ════════════════════════════════════════════
+       SMTP TAB SPACING
+       ════════════════════════════════════════════ */
+    #panel-smtp .grid-2 { gap: 10px; }
+    #panel-smtp .grid-2 .card { margin-bottom: 0; }
+    .card:has(.smtp-list#smtpDetailList) { margin-top: 12px; }
+
+    /* ════════════════════════════════════════════
+       RECIPIENTS TAB SPACING
+       ════════════════════════════════════════════ */
+    #panel-recipients .card:first-child { margin-bottom: 12px; }
+    #panel-recipients .card#smsCarrierCard { margin-top: 12px; margin-bottom: 12px; }
+    #panel-recipients .grid-2 { gap: 10px; margin-top: 12px; }
+    #panel-recipients .grid-2 .card { margin-bottom: 0; }
+    #panel-recipients .card:has(.grid-3) { margin-top: 12px; }
+    #panel-recipients .card#recipientsListCard { margin-top: 12px; }
+    #panel-recipients .grid-3 { gap: 10px; }
+    #panel-recipients .grid-3 .stat-tile { margin-bottom: 0; }
+
+    /* ════════════════════════════════════════════
+       SEGMENTS TAB SPACING
+       ════════════════════════════════════════════ */
+    #panel-segments .grid-3 { gap: 10px; }
+    #panel-segments .grid-3 .card { margin-bottom: 0; }
+    #panel-segments .grid-3 .card:first-child { margin-top: 0; }
+
+    /* ════════════════════════════════════════════
+       TEMPLATES TAB SPACING
+       ════════════════════════════════════════════ */
+    #panel-templates .template-grid { gap: 10px; }
+    #panel-templates .template-grid .template-card { margin-bottom: 0; }
+
+    /* ════════════════════════════════════════════
+       COMPOSE TAB SPACING
+       ════════════════════════════════════════════ */
+    #panel-compose .grid-2 { gap: 10px; }
+    #panel-compose .grid-2 .card { margin-bottom: 0; }
+    #panel-compose .grid-2 .card:first-child { margin-top: 0; }
+    #panel-compose .grid-2 .card:last-child { margin-top: 0; }
+
+    /* ════════════════════════════════════════════
+       CAMPAIGNS TAB SPACING
+       ════════════════════════════════════════════ */
+    #panel-campaigns .card:first-child { margin-bottom: 0; }
+    #panel-campaigns .card#campLiveCard { margin-top: 12px; }
+
+    /* ════════════════════════════════════════════
+       AUTOMATION TAB SPACING
+       ════════════════════════════════════════════ */
+    #panel-automation .card:first-child { margin-bottom: 0; }
+    #panel-automation .card#automationBuilder { margin-top: 12px; }
+
+    /* ════════════════════════════════════════════
+       ANALYTICS TAB SPACING
+       ════════════════════════════════════════════ */
+    #panel-analytics .grid-3 { gap: 10px; }
+    #panel-analytics .grid-3 .stat-tile { margin-bottom: 0; }
+    #panel-analytics .card:last-child { margin-top: 12px; }
+
+    /* ════════════════════════════════════════════
+       DELIVERABILITY TAB SPACING
+       ════════════════════════════════════════════ */
+    #panel-deliverability .grid-2 { gap: 10px; }
+    #panel-deliverability .grid-2 .card { margin-bottom: 0; }
+
+    /* ════════════════════════════════════════════
+       SETTINGS TAB SPACING
+       ════════════════════════════════════════════ */
+    #panel-settings .grid-2 { gap: 10px; }
+    #panel-settings .grid-2 .card { margin-bottom: 0; }
+    #panel-settings .grid-2 .card:first-child { margin-top: 0; }
+    #panel-settings .grid-2 .card:last-child { margin-top: 0; }
+
+    /* ════════════════════════════════════════════
+       COMMON ELEMENTS
+       ════════════════════════════════════════════ */
+    .card .camp-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        font-size: 10px;
+    }
+    .camp-table th,
+    .camp-table td {
+        padding: 5px 6px;
+        font-size: 9px;
+    }
+    .camp-table th { font-size: 8px; }
+    .camp-table .btn-group { flex-direction: column; gap: 3px; }
+    .camp-table .btn-group .btn { padding: 2px 6px; font-size: 8px; }
+    .camp-table .btn-group .btn svg { width: 0.7em; height: 0.7em; }
+    .camp-table .status-pill { font-size: 8px; padding: 2px 6px; }
+    .camp-table .progress-bar { width: 50px !important; height: 3px; }
+
+    .drop-zone { padding: 16px; }
+    .drop-zone .drop-icon svg { width: 32px; height: 32px; }
+    .drop-zone .drop-text { font-size: 10px; }
+
+    .progress-bar { height: 4px; }
+    .progress-label { font-size: 9px; }
+
+    .log-feed { max-height: 150px; padding: 4px 8px; }
+    .log-entry { font-size: 9px; gap: 4px; padding: 3px 0; }
+    .log-time { font-size: 8px; }
+    .log-msg { font-size: 9px; }
+
+    .template-card { padding: 10px; }
+    .template-card .template-icon svg { width: 20px; height: 20px; }
+    .template-card .template-name { font-size: 11px; }
+    .template-card .template-desc { font-size: 9px; }
+    .template-card .template-badge { font-size: 7px; padding: 1px 5px; }
+
+    .automation-flow { padding: 8px; gap: 6px; flex-wrap: nowrap; }
+    .automation-step { padding: 4px 8px; font-size: 9px; }
+    .automation-step .step-icon svg { width: 14px; height: 14px; }
+    .automation-step .step-label { font-size: 9px; }
+    .automation-arrow svg { width: 10px; height: 10px; }
+
+    .toggle-row { padding: 6px 0; }
+    .toggle-info span { font-size: 11px; }
+    .toggle-info small { font-size: 9px; }
+    .toggle { width: 32px; height: 18px; }
+    .toggle-slider:before { width: 12px; height: 12px; left: 3px; top: 3px; }
+    .toggle input:checked+.toggle-slider:before { transform: translateX(14px); }
+
+    .schedule-picker { flex-direction: column; gap: 6px; }
+    .schedule-picker input[type="datetime-local"] { width: 100%; }
+
+    .whitelist-panel { padding: 10px; }
+    .whitelist-panel h4 { font-size: 11px; }
+    .ip-chip { font-size: 10px; padding: 4px 8px; }
+
+    #toast-container {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: 100%;
+    }
+    .toast { padding: 8px 12px; font-size: 11px; max-width: 100%; border-radius: 8px; }
+
+    .empty-state { padding: 20px 12px; }
+    .empty-state svg { width: 28px; height: 28px; }
+    .empty-state p { font-size: 11px; }
+
+    code { font-size: 9px; padding: 2px 4px; }
+
+    #recipientsTableContainer { max-height: 250px; }
+    #recipientsTable td,
+    #recipientsTable th { padding: 6px 8px; font-size: 10px; }
+    #recipientSearchInput { width: 120px; font-size: 10px; padding: 4px 8px; }
+}
+
+/* ── Small Mobile (up to 480px) ─────────────── */
+@media (max-width: 480px) {
+    .main { padding: 8px; gap: 12px; }
+    .grid-4 { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .grid-3 { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .template-grid { grid-template-columns: 1fr; gap: 8px; }
+    .card { padding: 10px; }
+    .section-header { margin-bottom: 10px; gap: 4px; }
+    .btn-group { gap: 4px; }
+    .smtp-row { padding: 6px 8px; gap: 4px; }
+    #recipientsTable td,
+    #recipientsTable th { padding: 4px 6px; font-size: 10px; }
+    .camp-table th,
+    .camp-table td { padding: 4px 6px; font-size: 8px; }
+    .drop-zone { padding: 12px; }
+    .automation-flow { padding: 8px; gap: 6px; }
+    .automation-step { padding: 4px 8px; gap: 4px; }
+
+    /* ── Reduced spacing for small mobile ── */
+    #activeCampaignCard { margin-bottom: 8px; }
+    .card:has(.smtp-list#smtpHealthList) { margin-top: 8px; margin-bottom: 8px; }
+    .card:has(.log-feed#logFeed) { margin-top: 8px; }
+    .card:has(.smtp-list#smtpDetailList) { margin-top: 8px; }
+    #panel-recipients .card:first-child { margin-bottom: 8px; }
+    #panel-recipients .card#smsCarrierCard { margin-top: 8px; margin-bottom: 8px; }
+    #panel-recipients .card:has(.grid-3) { margin-top: 8px; }
+    #panel-recipients .card#recipientsListCard { margin-top: 8px; }
+    #panel-campaigns .card#campLiveCard { margin-top: 8px; }
+    #panel-automation .card#automationBuilder { margin-top: 8px; }
+    #panel-analytics .card:last-child { margin-top: 8px; }
+
+    #panel-smtp .grid-2 { gap: 8px; }
+    #panel-recipients .grid-2 { gap: 8px; margin-top: 8px; }
+    #panel-recipients .grid-3 { gap: 8px; }
+    #panel-segments .grid-3 { gap: 8px; }
+    #panel-analytics .grid-3 { gap: 8px; }
+    #panel-deliverability .grid-2 { gap: 8px; }
+    #panel-settings .grid-2 { gap: 8px; }
+    #panel-compose .grid-2 { gap: 8px; }
+    .grid-4 { gap: 8px; }
+    .grid-3 { gap: 8px; }
+    .grid-2 { gap: 8px; }
+    .template-grid { gap: 8px; }
+
+    #recipientSearchInput { width: 100px; font-size: 9px; }
+    #panel-smtp .card { padding: 8px; }
+
+    .stat-tile .stat-value { font-size: 15px; }
+    .stat-tile { padding: 8px; }
+    .stat-tile .stat-label { font-size: 7px; }
+    .stat-tile .stat-sub { font-size: 8px; }
+
+    .section-title { font-size: 14px; }
+
+    .topbar .logo { font-size: 12px; }
+    .topbar .logo .logo-icon { width: 18px; height: 18px; font-size: 8px; }
+    .topbar-stats .tstat {
+        padding: 2px 4px;
+        font-size: 7px;
+        gap: 2px;
+    }
+    .topbar-stats .tstat i { font-size: 7px; }
+    .topbar-stats .tstat strong { font-size: 8px; }
+    .topbar-stats .tstat .pulse-dot { width: 4px; height: 4px; }
+    .topbar-stats .tstat:nth-child(n+3) { display: none; }
+    .theme-toggle { padding: 2px 4px; font-size: 8px; }
+    .theme-toggle svg { width: 10px; height: 10px; }
+    .theme-toggle span:last-child { font-size: 7px; }
+
+    .sidebar .nav-btn { padding: 3px 6px; font-size: 9px; }
+    .sidebar .nav-btn .ico { font-size: 11px; width: 14px; }
+    .sidebar .nav-btn .nav-text { font-size: 8px; }
+
+    .btn { padding: 4px 8px; font-size: 9px; gap: 3px; }
+    .btn-sm { padding: 3px 6px; font-size: 9px; }
+    .btn svg { width: 0.7em; height: 0.7em; }
+
+    .camp-table .status-pill { font-size: 7px; padding: 1px 4px; }
+    input, select, textarea { padding: 5px 6px; font-size: 10px; }
+    .tab-btn { padding: 3px 6px; font-size: 9px; }
+    .tab-btn svg { width: 10px; height: 10px; }
+    .smtp-row { padding: 6px 8px; font-size: 9px; }
+    .smtp-row .smtp-email { font-size: 8px; }
+    .smtp-row .smtp-server { font-size: 8px; }
+    .drop-zone .drop-icon svg { width: 24px; height: 24px; }
+    .drop-zone .drop-text { font-size: 9px; }
+    .toast { font-size: 10px; padding: 6px 10px; }
+    .toast .toast-icon { width: 14px; height: 14px; }
+    .automation-flow { padding: 4px; gap: 4px; }
+    .automation-step { padding: 3px 6px; font-size: 8px; }
+    .automation-step .step-label { font-size: 8px; }
+    .automation-step .step-icon svg { width: 12px; height: 12px; }
+    .automation-arrow svg { width: 8px; height: 8px; }
+}
+
+/* ── Landscape Phone (max-height: 500px) ───── */
+@media (max-height: 500px) and (orientation: landscape) {
+    .topbar { min-height: 36px; padding: 3px 10px; }
+    .topbar .logo { font-size: 12px; }
+    .topbar .logo .logo-icon { width: 18px; height: 18px; font-size: 8px; }
+    .topbar-stats .tstat { padding: 2px 5px; font-size: 8px; }
+    .topbar-stats .tstat strong { font-size: 8px; }
+
+    .sidebar { min-height: 36px; max-height: 36px; padding: 3px 8px; }
+    .sidebar .nav-btn { padding: 3px 6px; font-size: 9px; }
+    .sidebar .nav-btn .ico { font-size: 11px; }
+    .sidebar .nav-btn .nav-text { font-size: 8px; }
+
+    .main { padding: 6px; gap: 10px; }
+    .card { padding: 8px; }
+    .card-title { font-size: 10px; margin-bottom: 6px; }
+
+    .stat-tile { padding: 6px; }
+    .stat-tile .stat-value { font-size: 14px; }
+    .stat-tile .stat-label { font-size: 7px; }
+
+    .log-feed { max-height: 80px; }
+    .section-title { font-size: 13px; }
+    .section-header { margin-bottom: 6px; }
+
+    .grid-4 { gap: 6px; }
+    .grid-3 { gap: 6px; }
+    .grid-2 { gap: 6px; }
+
+    .btn { padding: 4px 8px; font-size: 9px; }
+    .btn-sm { padding: 3px 6px; font-size: 8px; }
+
+    /* ── Landscape spacing ── */
+    .card:has(.smtp-list#smtpHealthList) { margin-top: 6px; margin-bottom: 6px; }
+    .card:has(.log-feed#logFeed) { margin-top: 6px; }
+    .card:has(.smtp-list#smtpDetailList) { margin-top: 6px; }
+    #panel-smtp .grid-2 { gap: 6px; }
+    #activeCampaignCard { margin-bottom: 6px; }
+    #panel-recipients .card:first-child { margin-bottom: 6px; }
+    #panel-recipients .card#smsCarrierCard { margin-top: 6px; margin-bottom: 6px; }
+    #panel-recipients .card:has(.grid-3) { margin-top: 6px; }
+    #panel-recipients .card#recipientsListCard { margin-top: 6px; }
+    #panel-campaigns .card#campLiveCard { margin-top: 6px; }
+    #panel-automation .card#automationBuilder { margin-top: 6px; }
+    #panel-analytics .card:last-child { margin-top: 6px; }
+}
+  </style>
+</head>
+<body>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">
+      <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">
+        <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="logo-icon">CF</div>
+      CampaignForge
+    </div>
+    <div class="topbar-stats">
+      <div class="tstat"><span class="pulse-dot" id="statusDot"></span><span id="statusText">Idle</span></div>
+      <div class="tstat"><i class="fa-solid fa-server"></i> SMTP: <strong id="topSmtpCount">0</strong></div>
+      <div class="tstat"><i class="fa-solid fa-users"></i> Recipients: <strong id="topRecipCount">0</strong></div>
+      <div class="tstat"><i class="fa-solid fa-circle-check"></i> Sent: <strong id="topSentCount">0</strong></div>
+      <div class="tstat"><i class="fa-solid fa-circle-xmark"></i> Failed: <strong id="topFailCount">0</strong></div>
+      <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">
+        <span id="themeIcon" class="theme-icon"><svg viewBox="0 0 24 24"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.7 6.7 0 0 0 21 12.8Z"/></svg></span>
+        <span id="themeText">Dark</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <button class="nav-btn active" onclick="showPanel('dashboard')" id="nav-dashboard">
+          <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+          <span class="nav-text">Dashboard</span>
+        </button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Setup</div>
+        <button class="nav-btn" onclick="showPanel('smtp')" id="nav-smtp">
+          <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/><path d="M7 8h10"/><path d="M7 12h5"/></svg></span>
+          <span class="nav-text">SMTP Servers</span>
+        </button>
+        <button class="nav-btn" onclick="showPanel('recipients')" id="nav-recipients">
+          <span class="ico"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          <span class="nav-text">Recipients</span>
+        </button>
+        <button class="nav-btn" onclick="showPanel('segments')" id="nav-segments">
+          <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg></span>
+          <span class="nav-text">Segments</span>
+        </button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Content</div>
+        <button class="nav-btn" onclick="showPanel('templates')" id="nav-templates">
+          <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></span>
+          <span class="nav-text">Templates</span>
+        </button>
+        <button class="nav-btn" onclick="showPanel('compose')" id="nav-compose">
+          <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></span>
+          <span class="nav-text">Compose</span>
+        </button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Campaigns</div>
+        <button class="nav-btn" onclick="showPanel('campaigns')" id="nav-campaigns">
+          <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 11v2"/><path d="M7 9.5v5"/><path d="M10 7.5v9"/><path d="M13 5.5v13"/><path d="M16 8l4-2v12l-4-2"/></svg></span>
+          <span class="nav-text">Campaigns</span>
+        </button>
+        <button class="nav-btn" onclick="showPanel('automation')" id="nav-automation">
+          <span class="ico"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4"/><circle cx="12" cy="3" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8 16h8"/></svg></span>
+          <span class="nav-text">Automation</span>
+        </button>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-section">
+        <div class="nav-label">Insights</div>
+        <button class="nav-btn" onclick="showPanel('analytics')" id="nav-analytics">
+          <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="2.5" height="5" rx=".5"/><rect x="11" y="9" width="2.5" height="8" rx=".5"/><rect x="15" y="6" width="2.5" height="11" rx=".5"/></svg></span>
+          <span class="nav-text">Analytics</span>
+        </button>
+        <button class="nav-btn" onclick="showPanel('deliverability')" id="nav-deliverability">
+          <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span>
+          <span class="nav-text">Deliverability</span>
+        </button>
+        <button class="nav-btn" onclick="showPanel('settings')" id="nav-settings">
+          <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4"/><path d="M12 19v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M1 12h4"/><path d="M19 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg></span>
+          <span class="nav-text">Settings</span>
+        </button>
+      </div>
+      <div class="sidebar-bottom">
+          <div class="sidebar-bottom-icon">
+              <svg viewBox="0 0 24 24"
+                   xmlns="http://www.w3.org/2000/svg"
+                   aria-hidden="true">
+                  <circle cx="12" cy="8" r="3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"/>
+                  <path d="M5 20c.8-3.5 3.3-5.5 7-5.5s6.2 2 7 5.5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"/>
+              </svg>
+          </div>
+          <span class="sidebar-bottom-text">CF v3.0 · All systems go</span>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main" id="mainContent">
+
+      <!-- ===== DASHBOARD ===== -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="section-header">
+          <div><div class="section-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div><div class="help-text">Live overview of your campaign activity</div></div>
+          <button class="btn btn-ghost btn-sm" onclick="refreshDashboard()"><svg viewBox="0 0 24 24"><path d="M21 3v6h-6"/><path d="M3 21v-6h6"/><path d="M16.3 4.7A8 8 0 1 1 4.7 16.3"/></svg> Refresh</button>
+        </div>
+        <div class="grid-4">
+          <div class="stat-tile blue"><div class="stat-label">SMTP Servers</div><div class="stat-value" id="dashSmtp">0</div><div class="stat-sub">configured</div></div>
+          <div class="stat-tile green"><div class="stat-label">Recipients</div><div class="stat-value" id="dashRecip">0</div><div class="stat-sub">loaded</div></div>
+          <div class="stat-tile purple"><div class="stat-label">Campaigns</div><div class="stat-value" id="dashCamps">0</div><div class="stat-sub">created</div></div>
+          <div class="stat-tile pink"><div class="stat-label">Open Rate</div><div class="stat-value" id="dashOpenRate">-</div><div class="stat-sub">avg across campaigns</div></div>
+          <div class="stat-tile green"><div class="stat-label">Total Sent</div><div class="stat-value" id="dashSent">0</div><div class="stat-sub">this session</div></div>
+          <div class="stat-tile red"><div class="stat-label">Total Failed</div><div class="stat-value" id="dashFailed">0</div><div class="stat-sub">this session</div></div>
+          <div class="stat-tile amber"><div class="stat-label">Success Rate</div><div class="stat-value" id="dashRate">-</div><div class="stat-sub">sent / total</div></div>
+          <div class="stat-tile teal"><div class="stat-label">Click Rate</div><div class="stat-value" id="dashClickRate">-</div><div class="stat-sub">avg across campaigns</div></div>
+        </div>
+        <div class="card" id="activeCampaignCard" style="display:none">
+          <div class="card-title"><svg viewBox="0 0 24 24"><path d="M4 11v2"/><path d="M7 9.5v5"/><path d="M10 7.5v9"/><path d="M13 5.5v13"/><path d="M16 8l4-2v12l-4-2"/></svg> Active Campaign <span class="badge badge-blue" id="activeCampName"></span></div>
+          <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" id="dashProgress" style="width:0%"></div></div><div class="progress-label"><span id="dashProgressPct">0%</span><span id="dashProgressDetail"></span></div></div>
+          <div class="btn-group"><button class="btn btn-danger btn-sm" onclick="stopCampaign()"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/></svg> Stop Campaign</button></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/><path d="M7 8h10"/><path d="M7 12h5"/></svg> SMTP Server Health</div>
+          <div class="smtp-list" id="smtpHealthList"><div class="empty-state"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/><path d="M7 8h10"/><path d="M7 12h5"/></svg><p>No SMTP servers loaded yet</p></div></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10"/><path d="M7 12h10"/><path d="M7 16h6"/></svg> Activity Log <button class="btn btn-ghost btn-sm" onclick="clearLog()" style="margin-left:auto"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg> Clear</button></div>
+          <div class="log-feed" id="logFeed"></div>
+        </div>
+      </div>
+
+      <!-- ===== SMTP ===== -->
+      <div class="panel" id="panel-smtp">
+        <div class="section-header">
+          <div><div class="section-title"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/><path d="M7 8h10"/><path d="M7 12h5"/></svg> SMTP Servers</div><div class="help-text">Configure your sending servers. Format: <code>server|port|email|password</code> or <code>server|port|email|password|My Server</code></div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v3"/><path d="M12 18h.01"/></svg> Upload SMTP File</div>
+            <div class="drop-zone" id="smtpDropZone"><input type="file" id="smtpFileInput" accept=".txt,.csv" onchange="uploadSmtp(this)"><div class="drop-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v3"/><path d="M12 18h.01"/></svg></div><div class="drop-text"><strong>Click or drag</strong> a .txt/.csv file<br>One server per line</div></div>
+            <div style="margin-top:10px;font-size:11px;color:var(--muted)">Example: <code>smtp.gmail.com|587|you@gmail.com|app_password</code></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg> Paste SMTP List</div>
+            <textarea id="smtpPasteArea" rows="6" placeholder="smtp.gmail.com|587|you@gmail.com|apppassword&#10;smtp.sendgrid.net|587|apikey|SG.xxxxx"></textarea>
+            <div class="btn-group" style="margin-top:12px">
+              <button class="btn btn-primary btn-sm" onclick="pasteSmtp()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Load</button>
+              <button class="btn btn-ghost btn-sm" onclick="testSmtp()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg> Test first</button>
+              <button class="btn btn-danger btn-sm" onclick="killDeadSmtps()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 9l2 2m0-2l-2 2M14 9l2 2m0-2l-2 2"/><path d="M9 16h6"/></svg> Kill Dead</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/><path d="M7 8h10"/><path d="M7 12h5"/></svg> Active SMTP Servers <span class="badge badge-blue" id="smtpCountBadge">0 loaded</span></div>
+          <div class="smtp-list" id="smtpDetailList"><div class="empty-state"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/><path d="M7 8h10"/><path d="M7 12h5"/></svg><p>No servers loaded</p></div></div>
+        </div>
+      </div>
+
+      <!-- ===== RECIPIENTS ===== -->
+      <div class="panel" id="panel-recipients">
+        <div class="section-header">
+          <div><div class="section-title"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Recipients</div><div class="help-text">Load email addresses or phone numbers for your campaign</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg> Select Channel</div>
+          <div class="channel-selector">
+              <div class="channel-btn active" id="ch-email" onclick="selectChannel('email')">
+                  <div class="ch-ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div>
+                  <div class="ch-lbl">Email</div>
+                  <div class="ch-sub">SMTP delivery</div>
+              </div>
+              <div class="channel-btn" id="ch-sms" onclick="selectChannel('sms')">
+                  <div class="ch-ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/></svg></div>
+                  <div class="ch-lbl">SMS</div>
+                  <div class="ch-sub">Email to SMS via carrier</div>
+              </div>
+          </div>
+        </div>
+        <div class="card" id="smsCarrierCard" style="display:none">
+          <div class="card-title"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/></svg> Carrier Selection <span class="badge badge-amber" id="carrierBadge">SMS Mode</span></div>
+          <div class="field-row">
+            <div class="field"><label>Country</label><select id="smsCountry" onchange="updateCarrierList()"><option value="USA">USA</option><option value="Canada">Canada</option><option value="Australia">Australia</option><option value="UK">UK</option></select></div>
+            <div class="field"><label>Carrier</label><select id="smsCarrier" onchange="updateCarrierPreview()"></select></div>
+          </div>
+          <div id="carrierPreview" style="margin-top:12px;padding:12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);display:none;"><div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;">Number Conversion Preview:</div><div style="font-family:var(--mono);font-size:11px;color:var(--muted2);line-height:1.8;" id="carrierPreviewContent"><span style="color:var(--muted);">Select a carrier to see conversion example</span></div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v3"/><path d="M12 18h.01"/></svg> Upload File</div>
+            <div class="drop-zone" id="recipDropZone"><input type="file" id="recipFileInput" accept=".txt,.csv" onchange="uploadRecipients(this)"><div class="drop-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v3"/><path d="M12 18h.01"/></svg></div><div class="drop-text"><strong>Click or drag</strong> your list file<br>.txt or .csv</div></div>
+            <div style="margin-top:10px;font-size:11px;color:var(--muted)" id="emailFormatHint">Email format: <code>email@domain.com</code> or <code>email,Name</code> per line</div>
+          </div>
+          <div class="card">
+            <div class="card-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg> Paste List</div>
+            <textarea id="recipPasteArea" rows="7" placeholder="email@example.com&#10;another@email.com,John"></textarea>
+            <button class="btn btn-primary btn-sm btn-full" style="margin-top:10px" onclick="pasteRecipients()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Load from text</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> Loaded Recipients <span class="badge badge-blue" id="recipientCountBadge">0 loaded</span> <button class="btn btn-ghost btn-sm" onclick="clearRecipients()" style="margin-left:auto"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg> Clear All</button></div>
+          <div class="grid-3"><div class="stat-tile blue"><div class="stat-label">Total</div><div class="stat-value" id="recipTotal">0</div></div><div class="stat-tile green"><div class="stat-label">Email</div><div class="stat-value" id="recipEmail">0</div></div><div class="stat-tile amber"><div class="stat-label">SMS</div><div class="stat-value" id="recipSms">0</div></div></div>
+        </div>
+        <div class="card" id="recipientsListCard">
+          <div class="card-title"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> All Loaded Contacts <span class="badge badge-purple" id="contactsCountBadge">0 contacts</span>
+            <div style="display:flex;gap:6px;margin-left:auto;"><input type="text" id="recipientSearchInput" placeholder="Search contacts..." style="width:180px;padding:5px 10px;font-size:11px;border-radius:6px;" oninput="filterRecipients()"><button class="btn btn-ghost btn-sm" onclick="exportRecipientsCSV()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button></div>
+          </div>
+          <div style="overflow-x:auto;max-height:400px;overflow-y:auto;" id="recipientsTableContainer">
+            <table class="camp-table" id="recipientsTable" style="width:100%;font-size:12px;">
+              <thead><tr><th style="width:30px;">#</th><th>Email / Phone</th><th>Name</th><th>Channel</th><th>Carrier</th><th style="width:80px;">Actions</th></tr></thead>
+              <tbody id="recipientsTableBody"><tr><td colspan="6"><div class="empty-state"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><p>No contacts loaded yet</p></div></td></tr></tbody>
+            </table>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap;gap:8px;">
+            <div style="font-size:11px;color:var(--muted);">Showing <span id="recipShowStart">0</span> - <span id="recipShowEnd">0</span> of <span id="recipTotalCount">0</span> contacts</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button class="btn btn-ghost btn-xs" onclick="prevRecipientsPage()" id="recipPrevBtn" disabled><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+              <span style="font-size:11px;color:var(--muted);" id="recipPageInfo">Page 1 of 1</span>
+              <button class="btn btn-ghost btn-xs" onclick="nextRecipientsPage()" id="recipNextBtn" disabled><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
+              <select id="recipPageSize" onchange="changeRecipientsPageSize()" style="width:auto;padding:3px 6px;font-size:10px;border-radius:4px;"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SEGMENTS ===== -->
+      <div class="panel" id="panel-segments">
+        <div class="section-header">
+          <div><div class="section-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg> Segments</div><div class="help-text">Create and manage audience segments for targeted campaigns</div></div>
+          <button class="btn btn-primary btn-sm" onclick="createSegment()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Segment</button>
+        </div>
+        <div class="grid-3" id="segmentList"><div class="card" style="border:2px dashed var(--border2);text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px;color:var(--muted2)">🧩</div><p style="color:var(--muted2);font-size:13px">Create your first segment</p></div></div>
+      </div>
+
+      <!-- ===== TEMPLATES ===== -->
+      <div class="panel" id="panel-templates">
+        <div class="section-header">
+          <div><div class="section-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg> Templates</div><div class="help-text">Pre-built email templates to accelerate your campaigns</div></div>
+          <button class="btn btn-primary btn-sm" onclick="createTemplate()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Template</button>
+        </div>
+        <div class="template-grid" id="templateGrid">
+          <div class="template-card" onclick="useTemplate('welcome')"><div class="template-badge">Popular</div><div class="template-icon"><svg viewBox="0 0 24 24"><path d="M18 11.5c0 4-3.2 7.2-7.2 7.2-1.1 0-2.2-.2-3.1-.7L4 19l1.1-3.2A7.1 7.1 0 0 1 3.6 11.5C3.6 7.5 6.8 4.3 10.8 4.3S18 7.5 18 11.5Z"/><path d="M14.5 9.5c.7.4 1.1 1 1.1 1.8"/><path d="M19 7.5c1.1.7 1.7 1.8 1.7 3.1"/><path d="M9 12.5h.01M13 12.5h.01"/></svg></div><div class="template-name">Welcome Series</div><div class="template-desc">Warm introduction for new subscribers</div></div>
+          <div class="template-card" onclick="useTemplate('newsletter')"><div class="template-badge">Weekly</div><div class="template-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10"/><path d="M7 12h6"/><path d="M7 16h8"/></svg></div><div class="template-name">Newsletter</div><div class="template-desc">Clean, readable newsletter layout</div></div>
+          <div class="template-card" onclick="useTemplate('promo')"><div class="template-badge">Conversion</div><div class="template-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/><path d="M17.5 6.5 21 3"/></svg></div><div class="template-name">Promotional</div><div class="template-desc">High-converting promotional design</div></div>
+          <div class="template-card" onclick="useTemplate('announcement')"><div class="template-badge">Update</div><div class="template-icon"><svg viewBox="0 0 24 24"><path d="M4 11v2"/><path d="M7 9.5v5"/><path d="M10 7.5v9"/><path d="M13 5.5v13"/><path d="M16 8l4-2v12l-4-2"/></svg></div><div class="template-name">Announcement</div><div class="template-desc">Product launches and updates</div></div>
+          <div class="template-card" onclick="useTemplate('transactional')"><div class="template-badge">Automated</div><div class="template-icon"><svg viewBox="0 0 24 24"><path d="M4 7h16v13H4z"/><path d="m4 7 2-4h12l2 4"/><path d="M9 11h6"/><path d="M9 15h6"/><path d="M8 3v4"/><path d="M16 3v4"/></svg></div><div class="template-name">Transactional</div><div class="template-desc">Order confirmations, receipts</div></div>
+          <div class="template-card" onclick="useTemplate('survey')"><div class="template-badge">Feedback</div><div class="template-icon"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="2.5" height="5" rx=".5"/><rect x="11" y="9" width="2.5" height="8" rx=".5"/><rect x="15" y="6" width="2.5" height="11" rx=".5"/></svg></div><div class="template-name">Survey</div><div class="template-desc">Request feedback with style</div></div>
+        </div>
+      </div>
+
+      <!-- ===== COMPOSE ===== -->
+      <div class="panel" id="panel-compose">
+        <div class="section-header">
+          <div><div class="section-title"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg> Compose Campaign</div><div class="help-text">Use <code>{{name}}</code>, <code>{{email}}</code> for personalization.</div></div>
+        </div>
+        <div class="grid-2">
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="card">
+              <div class="card-title"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="2.5" height="5" rx=".5"/><rect x="11" y="9" width="2.5" height="8" rx=".5"/><rect x="15" y="6" width="2.5" height="11" rx=".5"/></svg> Message Details</div>
+              <div class="field"><label>Campaign Name</label><input type="text" id="campName" placeholder="e.g. June Newsletter 2025"></div>
+              <div class="field"><label>Subject Line</label><input type="text" id="campSubject" placeholder="e.g. Your order has shipped 🎉"></div>
+              <div class="field"><label>Campaign Type</label><select id="campType"><option value="newsletter">Newsletter</option><option value="transactional">Transactional</option><option value="promotional">Promotional</option><option value="announcement">Announcement</option><option value="sms">SMS Blast</option></select></div>
+              <select id="campChannel"><option value="email">Email only</option><option value="sms">SMS (Email-to-SMS)</option></select>
+              <div class="field"><label>Schedule Send</label><div class="schedule-picker"><input type="datetime-local" id="campSchedule"><button class="btn btn-ghost btn-sm" onclick="scheduleCampaign()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Schedule</button></div></div>
+            </div>
+            <div class="card">
+              <div class="card-title"><svg viewBox="0 0 24 24"><path d="M4 11v2"/><path d="M7 9.5v5"/><path d="M10 7.5v9"/><path d="M13 5.5v13"/><path d="M16 8l4-2v12l-4-2"/></svg> Quick Launch</div>
+              <div class="toggle-row"><div class="toggle-info"><span>HTML Mode</span><small>Enable rich HTML email body</small></div><label class="toggle"><input type="checkbox" id="htmlModeToggle"><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-info"><span>Track Opens</span><small>Track email opens via tracking pixel</small></div><label class="toggle"><input type="checkbox" id="trackOpensToggle" checked><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-info"><span>Track Clicks</span><small>Track link clicks via redirect</small></div><label class="toggle"><input type="checkbox" id="trackClicksToggle" checked><span class="toggle-slider"></span></label></div>
+              <div style="margin-top:16px" class="btn-group"><button class="btn btn-success btn-full" onclick="createAndLaunch()" id="launchBtn"><svg viewBox="0 0 24 24"><path d="M4 11v2"/><path d="M7 9.5v5"/><path d="M10 7.5v9"/><path d="M13 5.5v13"/><path d="M16 8l4-2v12l-4-2"/></svg> Create & Launch</button></div>
+              <div class="btn-group" style="margin-top:8px"><button class="btn btn-ghost btn-sm btn-full" onclick="saveDraft()"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg> Save Draft</button><button class="btn btn-ghost btn-sm btn-full" onclick="previewMessage()"><svg viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></svg> Preview</button><button class="btn btn-ghost btn-sm btn-full" onclick="checkSpamScore()"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> Spam Score</button></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="tabs"><button class="tab-btn active" onclick="switchMsgTab('plain',this)"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10"/><path d="M7 12h10"/><path d="M7 16h6"/></svg> Plain</button><button class="tab-btn" onclick="switchMsgTab('html',this)"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10"/><path d="M7 12h10"/><path d="M7 16h6"/></svg> HTML</button><button class="tab-btn" onclick="switchMsgTab('preview',this)"><svg viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></svg> Preview</button></div>
+            <div class="tab-pane active" id="tab-plain"><textarea id="msgBodyPlain" rows="16" placeholder="Dear {{name}},&#10;&#10;Your message here..."></textarea></div>
+            <div class="tab-pane" id="tab-html"><textarea id="msgBodyHtml" rows="16" placeholder="<h1>Hello {{name}}</h1><p>Your message here...</p>"></textarea></div>
+            <div class="tab-pane" id="tab-preview"><div id="msgPreviewFrame" style="background:#fff;border-radius:8px;padding:16px;min-height:200px;color:#333;font-size:13px;overflow-y:auto;max-height:400px"></div></div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px"><span style="font-size:11px;color:var(--muted)" id="charCount">0 characters</span><span style="font-size:11px;color:var(--muted)" id="smsSegments"></span><span style="font-size:11px;color:var(--muted)" id="spamScoreDisplay"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CAMPAIGNS ===== -->
+      <div class="panel" id="panel-campaigns">
+        <div class="section-header">
+          <div><div class="section-title"><svg viewBox="0 0 24 24"><path d="M4 11v2"/><path d="M7 9.5v5"/><path d="M10 7.5v9"/><path d="M13 5.5v13"/><path d="M16 8l4-2v12l-4-2"/></svg> Campaigns</div><div class="help-text">All campaigns this session</div></div>
+          <button class="btn btn-ghost btn-sm" onclick="loadCampaigns()"><svg viewBox="0 0 24 24"><path d="M21 3v6h-6"/><path d="M3 21v-6h6"/><path d="M16.3 4.7A8 8 0 1 1 4.7 16.3"/></svg> Refresh</button>
+        </div>
+        <div class="card">
+          <table class="camp-table" id="campTable"><thead><tr><th>Name</th><th>Channel</th><th>Status</th><th>Sent</th><th>Failed</th><th>Opens</th><th>Clicks</th><th>Progress</th><th>Actions</th></tr></thead><tbody id="campTableBody"><tr><td colspan="9"><div class="empty-state"><svg viewBox="0 0 24 24"><path d="M4 11v2"/><path d="M7 9.5v5"/><path d="M10 7.5v9"/><path d="M13 5.5v13"/><path d="M16 8l4-2v12l-4-2"/></svg><p>No campaigns yet</p></div></td></tr></tbody></table>
+        </div>
+        <div class="card" id="campLiveCard" style="display:none"><div class="card-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Live Send Log</div><div class="log-feed" id="campLiveLog"></div></div>
+      </div>
+
+      <!-- ===== AUTOMATION ===== -->
+      <div class="panel" id="panel-automation">
+        <div class="section-header">
+          <div><div class="section-title"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4"/><circle cx="12" cy="3" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8 16h8"/></svg> Automation</div><div class="help-text">Set up automated email sequences triggered by events</div></div>
+          <button class="btn btn-primary btn-sm" onclick="createAutomation()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Automation</button>
+        </div>
+        <div class="card">
+          <div class="card-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg> Automation Flows <span class="badge badge-pink" id="automationCount">0 active</span></div>
+          <div id="automationList"><div class="empty-state"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4"/><circle cx="12" cy="3" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8 16h8"/></svg><p>No automation flows created yet</p></div></div>
+        </div>
+        <div class="card" id="automationBuilder" style="display:none">
+          <div class="card-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg> Automation Builder <span class="badge badge-blue" id="automationBuilderName">New Flow</span></div>
+          <div class="automation-flow" id="automationFlowPreview">
+            <div class="automation-step"><span class="step-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4V8Z"/></svg></span><span class="step-label">Trigger</span></div>
+            <span class="automation-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+            <div class="automation-step"><span class="step-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="step-label">Delay 1h</span></div>
+            <span class="automation-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+            <div class="automation-step"><span class="step-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span class="step-label">Email 1</span></div>
+          </div>
+          <div class="btn-group" style="margin-top:16px"><button class="btn btn-success btn-sm" onclick="saveAutomation()"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg> Save Flow</button><button class="btn btn-ghost btn-sm" onclick="toggleAutomationBuilder()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Close</button></div>
+        </div>
+      </div>
+
+      <!-- ===== ANALYTICS ===== -->
+      <div class="panel" id="panel-analytics">
+        <div class="section-header">
+          <div><div class="section-title"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="2.5" height="5" rx=".5"/><rect x="11" y="9" width="2.5" height="8" rx=".5"/><rect x="15" y="6" width="2.5" height="11" rx=".5"/></svg> Analytics</div><div class="help-text">Detailed campaign performance metrics</div></div>
+          <button class="btn btn-ghost btn-sm" onclick="refreshAnalytics()"><svg viewBox="0 0 24 24"><path d="M21 3v6h-6"/><path d="M3 21v-6h6"/><path d="M16.3 4.7A8 8 0 1 1 4.7 16.3"/></svg> Refresh</button>
+        </div>
+        <div class="grid-3">
+          <div class="stat-tile blue"><div class="stat-label">Total Opens</div><div class="stat-value" id="analyticsOpens">0</div></div>
+          <div class="stat-tile green"><div class="stat-label">Total Clicks</div><div class="stat-value" id="analyticsClicks">0</div></div>
+          <div class="stat-tile purple"><div class="stat-label">Avg Open Rate</div><div class="stat-value" id="analyticsOpenRate">-</div></div>
+          <div class="stat-tile pink"><div class="stat-label">Avg Click Rate</div><div class="stat-value" id="analyticsClickRate">-</div></div>
+          <div class="stat-tile amber"><div class="stat-label">Best Campaign</div><div class="stat-value" id="analyticsBestCamp" style="font-size:18px">-</div></div>
+          <div class="stat-tile teal"><div class="stat-label">Total Recipients</div><div class="stat-value" id="analyticsRecipients">0</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg> Campaign Performance</div>
+          <div style="overflow-x:auto"><table class="camp-table" id="analyticsTable"><thead><tr><th>Campaign</th><th>Sent</th><th>Opens</th><th>Open Rate</th><th>Clicks</th><th>Click Rate</th></tr></thead><tbody id="analyticsTableBody"><tr><td colspan="6"><div class="empty-state"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="2.5" height="5" rx=".5"/><rect x="11" y="9" width="2.5" height="8" rx=".5"/><rect x="15" y="6" width="2.5" height="11" rx=".5"/></svg><p>No data yet</p></div></td></tr></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- ===== DELIVERABILITY ===== -->
+      <div class="panel" id="panel-deliverability">
+        <div class="section-header">
+          <div><div class="section-title"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> Deliverability Guide</div><div class="help-text">Best practices to reach the inbox, not spam</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card"><div class="card-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Authentication (SPF/DKIM/DMARC)</div><div style="font-size:13px;color:var(--muted2);line-height:1.8"><p style="margin-bottom:12px">These DNS records prove your mail is legitimate:</p><div style="margin-bottom:10px;padding:10px;background:var(--surface);border-radius:8px"><strong style="color:var(--cyan)">SPF</strong><br><code>v=spf1 include:_spf.yourprovider.com ~all</code></div><div style="margin-bottom:10px;padding:10px;background:var(--surface);border-radius:8px"><strong style="color:var(--cyan)">DKIM</strong><br><code>selector._domainkey TXT "v=DKIM1; k=rsa; p=..."</code></div><div style="padding:10px;background:var(--surface);border-radius:8px"><strong style="color:var(--cyan)">DMARC</strong><br><code>_dmarc TXT "v=DMARC1; p=quarantine; rua=mailto:you@domain.com"</code></div></div></div>
+          <div class="card"><div class="card-title"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="2.5" height="5" rx=".5"/><rect x="11" y="9" width="2.5" height="8" rx=".5"/><rect x="15" y="6" width="2.5" height="11" rx=".5"/></svg> IP Warm-up Schedule</div><div style="font-size:12px;color:var(--muted2);line-height:1.8"><table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px"><tr style="border-bottom:1px solid var(--border)"><th style="text-align:left;padding:5px 8px;color:var(--muted)">Day</th><th style="text-align:right;padding:5px 8px;color:var(--muted)">Max Sends</th></tr><tr><td style="padding:4px 8px">Days 1–2</td><td style="text-align:right;padding:4px 8px;color:var(--green)">50/day</td></tr><tr><td style="padding:4px 8px">Days 3–4</td><td style="text-align:right;padding:4px 8px;color:var(--green)">200/day</td></tr><tr><td style="padding:4px 8px">Days 5–7</td><td style="text-align:right;padding:4px 8px;color:var(--amber)">500/day</td></tr><tr><td style="padding:4px 8px">Week 2</td><td style="text-align:right;padding:4px 8px;color:var(--amber)">2,000/day</td></tr><tr><td style="padding:4px 8px">Week 3</td><td style="text-align:right;padding:4px 8px;color:var(--accent)">10,000/day</td></tr><tr><td style="padding:4px 8px">Week 4+</td><td style="text-align:right;padding:4px 8px;color:var(--accent)">Unlimited</td></tr></table></div></div>
+          <div class="card"><div class="card-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg> Content Best Practices</div><div style="font-size:12px;color:var(--muted2);line-height:2">✔ Keep subject lines under 50 characters<br>✔ Avoid ALL CAPS<br>✔ Maintain text-to-image ratio<br>✔ Avoid spam trigger words<br>✔ Include plain-text version<br>✔ Test before sending</div></div>
+          <div class="card"><div class="card-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg> Free Tools</div><div style="display:flex;flex-direction:column;gap:8px;font-size:12px"><div style="padding:10px;background:var(--surface);border-radius:8px"><strong>mail-tester.com</strong><br><span style="color:var(--muted)">Spam score</span></div><div style="padding:10px;background:var(--surface);border-radius:8px"><strong>mxtoolbox.com</strong><br><span style="color:var(--muted)">DNS + blacklist</span></div><div style="padding:10px;background:var(--surface);border-radius:8px"><strong>senderscore.org</strong><br><span style="color:var(--muted)">IP reputation</span></div></div></div>
+        </div>
+      </div>
+
+      <!-- ===== SETTINGS ===== -->
+      <div class="panel" id="panel-settings">
+        <div class="section-header">
+          <div><div class="section-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4"/><path d="M12 19v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M1 12h4"/><path d="M19 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg> Settings</div><div class="help-text">Sending behavior, compliance, and identity</div></div>
+          <button class="btn btn-success" onclick="saveSettings()"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg> Save All</button>
+        </div>
+        <div class="grid-2">
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="card"><div class="card-title"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="2.5" height="5" rx=".5"/><rect x="11" y="9" width="2.5" height="8" rx=".5"/><rect x="15" y="6" width="2.5" height="11" rx=".5"/></svg> Speed & Reliability</div>
+              <div class="field"><label>Concurrent Workers</label><input type="number" id="setConcurrency" value="3" min="1" max="10"></div>
+              <div class="field"><label>Delay Between Sends (s)</label><input type="number" id="setDelay" value="0.5" step="0.1" min="0.1"></div>
+              <div class="field"><label>Max Retries</label><input type="number" id="setRetries" value="2" min="0" max="5"></div>
+              <div class="field"><label>SMTP Timeout (s)</label><input type="number" id="setTimeout" value="20" min="5" max="60"></div>
+              <div class="field"><label>Daily Send Limit (0 = unlimited)</label><input type="number" id="setDailyLimit" value="0" min="0"></div>
+            </div>
+            <div class="card"><div class="card-title"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> IP Whitelisting</div>
+              <div class="toggle-row"><div class="toggle-info"><span>Enable IP Whitelist</span><small>Show whitelisted IPs</small></div><label class="toggle"><input type="checkbox" id="whitelistToggle" onchange="toggleWhitelistPanel()"><span class="toggle-slider"></span></label></div>
+              <div id="whitelistPanel" style="display:none;margin-top:12px"><div class="field"><label>Email Service Provider</label><select id="whitelistEsp" onchange="updateWhitelistInfo()"><option>SendGrid</option><option>Mailgun</option><option>Amazon SES</option><option>Postmark</option><option>Custom SMTP</option></select></div><div class="whitelist-panel" id="whitelistInfoPanel"><h4><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg> IPs to Whitelist</h4><div class="ip-list" id="whitelistIpList"></div><div class="whitelist-docs" id="whitelistDocs"></div></div></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="card"><div class="card-title"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Sender Identity</div>
+              <div class="field"><label>From Name</label><input type="text" id="setFromName" placeholder="e.g. Acme Newsletter"></div>
+              <div class="field"><label>From Address (Spoof)</label><input type="email" id="setFromAddress" placeholder="send@yourdomain.com"></div>
+              <div class="field"><label>Reply-To</label><input type="email" id="setReplyTo" placeholder="replies@yourdomain.com"></div>
+              <div class="field"><label>Physical Address</label><input type="text" id="setPhysicalAddr" placeholder="123 Main St, City"></div>
+              <div class="field"><label>Test Recipient</label><input type="email" id="setTestRecipient" placeholder="test@yourdomain.com"></div>
+            </div>
+            <div class="card"><div class="card-title"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg> Compliance</div>
+              <div class="toggle-row"><div class="toggle-info"><span>Unsubscribe Footer</span><small>Required for bulk email</small></div><label class="toggle"><input type="checkbox" id="unsubToggle" checked><span class="toggle-slider"></span></label></div>
+              <div class="toggle-row"><div class="toggle-info"><span>Auto-test SMTP on Upload</span><small>Test each server when loaded</small></div><label class="toggle"><input type="checkbox" id="autoTestToggle" checked><span class="toggle-slider"></span></label></div>
+              <div style="margin-top:14px;padding:12px;background:rgba(79,142,247,.06);border:1px solid rgba(79,142,247,.2);border-radius:8px;font-size:11px;color:var(--muted2);line-height:1.7"><strong style="color:var(--accent)">⚡ Compliance Reminder</strong><br>• Only send to opted-in users<br>• Include physical address<br>• Honor unsubscribes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container"></div>
+
+  <script>
+    // ============================================
+    // STORAGE MANAGER
+    // ============================================
+    const StorageManager = {
+      getDeviceId() {
+        let id = localStorage.getItem('cf_device_id');
+        if (!id) { id = 'DEV_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,6); localStorage.setItem('cf_device_id', id); }
+        return id;
+      },
+      getKey(key) { return 'cf_' + this.getDeviceId() + '_' + key; },
+      setItem(key, value) { try { localStorage.setItem(this.getKey(key), JSON.stringify({ value, deviceId: this.getDeviceId(), timestamp: Date.now() })); return true; } catch(e) { return false; } },
+      getItem(key) { try { const d = JSON.parse(localStorage.getItem(this.getKey(key))); return d && d.deviceId === this.getDeviceId() ? d.value : null; } catch(e) { return null; } },
+      removeItem(key) { try { localStorage.removeItem(this.getKey(key)); return true; } catch(e) { return false; } },
+      saveSession(data) { this.setItem('session_data', data); },
+      getSession() { return this.getItem('session_data'); },
+      clearDeviceData() { const id = this.getDeviceId(); const keys = []; for (let i=0; i<localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith('cf_' + id + '_')) keys.push(k); } keys.forEach(k => localStorage.removeItem(k)); return keys.length; }
+    };
+
+    // ============================================
+    // APP STATE
+    // ============================================
+    let appState = {
+      smtpConfigs: [], recipients: [], campaigns: {}, activeCampaignId: null,
+      sessionSent: 0, sessionFailed: 0,
+      settings: { concurrency: 3, delay_between: 0.5, max_retries: 2, timeout: 20, daily_limit: 0, from_name: '', from_address: '', reply_to: '', physical_address: '', unsubscribe_footer: true, whitelist_mode: false, whitelist_esp: 'Custom SMTP', test_recipient: '', auto_test_on_upload: true }
+    };
+
+    function loadAppState() { const s = StorageManager.getSession(); if (s) { appState = { ...appState, ...s }; if (!appState.settings) appState.settings = {}; return true; } return false; }
+    function saveAppState() { StorageManager.saveSession(appState); }
+
+    // ============================================
+    // THEME
+    // ============================================
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.classList.contains('dark-mode');
+      html.classList.toggle('dark-mode', !isDark);
+      StorageManager.setItem('theme', isDark ? 'light' : 'dark');
+      const icon = document.getElementById('themeIcon');
+      const text = document.getElementById('themeText');
+      const moon = '<svg viewBox="0 0 24 24"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.7 6.7 0 0 0 21 12.8Z"/></svg>';
+      const sun = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
+      icon.innerHTML = isDark ? moon : sun;
+      text.textContent = isDark ? 'Dark' : 'Light';
+    }
+
+    // ============================================
+    // SIDEBAR
+    // ============================================
+    let sidebarCollapsed = false;
+    function toggleSidebar() { sidebarCollapsed = !sidebarCollapsed; document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed); StorageManager.setItem('sidebarCollapsed', sidebarCollapsed); }
+
+    // ============================================
+    // NAVIGATION
+    // ============================================
+    function showPanel(id) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      const panel = document.getElementById('panel-' + id);
+      if (panel) panel.classList.add('active');
+      const nav = document.getElementById('nav-' + id);
+      if (nav) nav.classList.add('active');
+      if (id === 'smtp') refreshSmtpList();
+      if (id === 'recipients') refreshRecipStats();
+      if (id === 'campaigns') loadCampaigns();
+      if (id === 'analytics') refreshAnalytics();
+    }
+
+    // ============================================
+    // CARRIER DATA
+    // ============================================
+    const CARRIER_GATEWAYS = {
+      "USA": { "AT&T": "txt.att.net", "T-Mobile": "tmomail.net", "Verizon": "vtext.com", "Sprint": "messaging.sprintpcs.com", "Google Fi": "msg.fi.google.com" },
+      "Canada": { "Bell": "txt.bell.ca", "Rogers": "pcs.rogers.com", "Telus": "msg.telus.com", "Fido": "fido.ca" },
+      "Australia": { "Telstra": "sms.telstra.com.au", "Optus": "optusmobile.com.au", "Vodafone": "voda.com.au" },
+      "UK": { "EE": "mms.ee.co.uk", "O2": "o2imail.co.uk", "Vodafone UK": "vodafone.net", "Three": "three.co.uk" }
+    };
+
+    function convertPhoneToEmail(phone, country, carrier) {
+      const clean = phone.replace(/\D/g, '');
+      const gateway = (CARRIER_GATEWAYS[country] || {})[carrier];
+      return gateway ? clean + '@' + gateway : null;
+    }
+
+    function updateCarrierList() {
+      const country = document.getElementById('smsCountry').value;
+      const carriers = CARRIER_GATEWAYS[country] || {};
+      const sel = document.getElementById('smsCarrier');
+      sel.innerHTML = Object.keys(carriers).map(c => '<option>' + c + '</option>').join('');
+      updateCarrierPreview();
+    }
+
+    function updateCarrierPreview() {
+      const country = document.getElementById('smsCountry').value;
+      const carrier = document.getElementById('smsCarrier').value;
+      const preview = document.getElementById('carrierPreview');
+      const content = document.getElementById('carrierPreviewContent');
+      if (carrier) {
+        preview.style.display = 'block';
+        const gateway = (CARRIER_GATEWAYS[country] || {})[carrier] || '';
+        const sample = '6465386464';
+        const converted = sample + '@' + gateway;
+        content.innerHTML = '<div style="display:grid;grid-template-columns:auto 1fr;gap:4px 12px;"><span style="color:var(--muted);">Phone:</span><span style="color:var(--text);">' + sample + '</span><span style="color:var(--muted);">Carrier:</span><span style="color:var(--text);">' + carrier + '</span><span style="color:var(--muted);">Gateway:</span><span style="color:var(--cyan);">' + gateway + '</span><span style="color:var(--muted);">Converted:</span><span style="color:var(--green);font-weight:600;">' + converted + '</span></div>';
+      } else { preview.style.display = 'none'; }
+    }
+
+    // ============================================
+    // CHANNEL SELECTOR
+    // ============================================
+    let selectedChannel = 'email';
+    function selectChannel(ch) {
+        selectedChannel = ch;
+        // Only toggle email and sms (removed both)
+        ['email', 'sms'].forEach(c => document.getElementById('ch-' + c).classList.toggle('active', c === ch));
+        
+        // Show SMS carrier card only when SMS is selected
+        document.getElementById('smsCarrierCard').style.display = (ch === 'sms') ? '' : 'none';
+        
+        const badge = document.getElementById('carrierBadge');
+        badge.textContent = ch === 'sms' ? 'SMS Mode' : 'Email Mode';
+        
+        const hint = document.getElementById('emailFormatHint');
+        const pa = document.getElementById('recipPasteArea');
+        
+        if (ch === 'sms') {
+            hint.innerHTML = 'Phone format: <code>6465386464</code> - one 10-digit number per line (digits only)';
+            pa.placeholder = '6465386464\n3135243034\n9542140997\n9152271883';
+        } else {
+            hint.innerHTML = 'Email format: <code>email@domain.com</code> or <code>email,Name</code> per line';
+            pa.placeholder = 'email@example.com\nanother@email.com,John Doe\nthird@email.com';
+        }
+    }
+
+    function parseRecipientLines(lines, channel, country, carrier) {
+        const recipients = [];
+        let emailCount = 0, smsCount = 0;
+        for (let line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('//')) continue;
+            const digits = trimmed.replace(/\D/g, '');
+            const isPhone = digits.length >= 10 && /^\d+$/.test(digits);
+            const isEmail = trimmed.indexOf('@') !== -1 && trimmed.indexOf('.') !== -1;
+            
+            // SMS mode - phone numbers only
+            if (isPhone && channel === 'sms') {
+                const converted = convertPhoneToEmail(digits, country, carrier);
+                if (converted) {
+                    recipients.push({ 
+                        address: converted, 
+                        name: digits, 
+                        channel: 'sms', 
+                        carrier: country + '/' + carrier, 
+                        original: trimmed, 
+                        phone: digits 
+                    });
+                    smsCount++;
+                }
+            } 
+            // Email mode - email addresses only
+            else if (isEmail && channel === 'email') {
+                let address = trimmed, name = '';
+                if (trimmed.indexOf(',') !== -1) {
+                    const parts = trimmed.split(',').map(p => p.trim());
+                    address = parts[0];
+                    name = parts.slice(1).join(', ');
+                }
+                recipients.push({ address, name, channel: 'email', carrier: '', original: trimmed, phone: '' });
+                emailCount++;
+            } 
+            // Email mode - treat as email
+            else if (channel === 'email' && trimmed) {
+                recipients.push({ address: trimmed, name: '', channel: 'email', carrier: '', original: trimmed, phone: '' });
+                emailCount++;
+            }
+            // SMS mode - try to extract phone
+            else if (channel === 'sms' && trimmed) {
+                const converted2 = convertPhoneToEmail(trimmed, country, carrier);
+                if (converted2) {
+                    recipients.push({ 
+                        address: converted2, 
+                        name: trimmed, 
+                        channel: 'sms', 
+                        carrier: country + '/' + carrier, 
+                        original: trimmed, 
+                        phone: trimmed.replace(/\D/g, '') 
+                    });
+                    smsCount++;
+                }
+            }
+        }
+        return { recipients, emailCount, smsCount, total: recipients.length };
+    }
+
+    // ============================================
+    // SMTP FUNCTIONS
+    // ============================================
+    async function uploadSmtp(input) {
+      const f = input.files[0];
+      if (!f) return;
+      const fd = new FormData(); fd.append('file', f);
+      const r = await fetch('/api/smtp/upload', { method: 'POST', body: fd }).then(res => res.json());
+      toast(r.success ? 'success' : 'error', r.message);
+      addLog(r.message, r.success ? 'ok' : 'err');
+      if (r.success) { appState.smtpConfigs = await fetch('/api/smtp/list').then(res => res.json()); saveAppState(); }
+      await refreshSmtpList(); await refreshDashboard();
+    }
+
+    async function pasteSmtp() {
+      const content = document.getElementById('smtpPasteArea').value.trim();
+      if (!content) return toast('error', 'Paste some SMTP configs first');
+      const r = await fetch('/api/smtp/paste', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content }) }).then(res => res.json());
+      toast(r.success ? 'success' : 'error', r.message);
+      addLog(r.message, r.success ? 'ok' : 'err');
+      if (r.success) { appState.smtpConfigs = await fetch('/api/smtp/list').then(res => res.json()); saveAppState(); }
+      await refreshSmtpList(); await refreshDashboard();
+    }
+
+    async function testSmtp() {
+      toast('info', 'Testing connection...');
+      const r = await fetch('/api/smtp/test_one', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'full' }) }).then(res => res.json());
+      toast(r.success ? 'success' : 'error', r.message);
+      addLog(r.message, r.success ? 'ok' : 'err');
+      await refreshSmtpList();
+    }
+
+    async function killDeadSmtps() {
+      const r = await fetch('/api/smtp/kill_dead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'purge' }) }).then(res => res.json());
+      toast('success', 'Removed ' + r.count + ' dead SMTP servers');
+      addLog('Killed ' + r.count + ' dead SMTP servers', 'warn');
+      if (r.count > 0) { appState.smtpConfigs = await fetch('/api/smtp/list').then(res => res.json()); saveAppState(); }
+      await refreshSmtpList(); await refreshDashboard();
+    }
+
+    async function refreshSmtpList() {
+      const smtps = await fetch('/api/smtp/list').then(res => res.json()).catch(() => []);
+      const el = document.getElementById('smtpDetailList');
+      const badge = document.getElementById('smtpCountBadge');
+      badge.textContent = smtps.length + ' loaded';
+      if (!smtps.length) { el.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/><path d="M7 8h10"/><path d="M7 12h5"/></svg><p>No servers loaded</p></div>'; return; }
+      el.innerHTML = smtps.map((s, i) => {
+        const hpct = Math.round(s.health * 100);
+        const hcol = hpct > 60 ? 'var(--green)' : hpct > 30 ? 'var(--amber)' : 'var(--red)';
+        return '<div class="smtp-row"><span style="font-size:10px;min-width:24px;text-align:center;color:var(--muted);font-family:var(--mono)">#' + (i+1) + '</span><span class="smtp-email">' + s.email + '</span><span class="smtp-server">' + s.server + ':' + s.port + '</span><span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 6px;border-radius:4px;background:' + (s.is_dead ? 'var(--red)' : 'var(--green)') + '20;color:' + (s.is_dead ? 'var(--red)' : 'var(--green)') + ';">' + (s.is_dead ? '✖' : '✓') + (s.is_dead ? 'Dead' : 'Alive') + '</span><div class="smtp-health-bar"><div class="smtp-health-fill" style="width:' + hpct + '%;background:' + hcol + '"></div></div><span style="font-size:10px;font-family:var(--mono);color:' + hcol + ';width:32px">' + hpct + '%</span></div>';
+      }).join('');
+    }
+
+    // ============================================
+    // RECIPIENTS
+    // ============================================
+    async function uploadRecipients(input) {
+      const f = input.files[0];
+      if (!f) return;
+      const ch = selectedChannel;
+      const country = document.getElementById('smsCountry').value;
+      const carrier = document.getElementById('smsCarrier').value;
+      const text = await f.text();
+      const lines = text.split('\n');
+      const result = parseRecipientLines(lines, ch, country, carrier);
+      if (!result.recipients.length) return toast('error', 'No valid recipients found');
+      const fd = new FormData(); fd.append('file', f); fd.append('channel', ch); fd.append('country', country); fd.append('carrier', carrier);
+      const r = await fetch('/api/recipients/upload', { method: 'POST', body: fd }).then(res => res.json());
+      const msg = 'Loaded ' + result.recipients.length + ' recipients (' + result.emailCount + ' email, ' + result.smsCount + ' SMS)';
+      toast(r.success !== false ? 'success' : 'warning', msg);
+      addLog(msg, r.success !== false ? 'ok' : 'warn');
+      appState.recipients = await fetch('/api/recipients/list').then(res => res.json()).then(d => d.recipients || []);
+      saveAppState();
+      await refreshRecipStats();
+    }
+
+    async function pasteRecipients() {
+      const content = document.getElementById('recipPasteArea').value.trim();
+      if (!content) return toast('error', 'Paste some addresses first');
+      const ch = selectedChannel;
+      const country = document.getElementById('smsCountry').value;
+      const carrier = document.getElementById('smsCarrier').value;
+      const lines = content.split('\n');
+      const result = parseRecipientLines(lines, ch, country, carrier);
+      if (!result.recipients.length) return toast('error', 'No valid recipients found');
+      const r = await fetch('/api/recipients/paste', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content, channel: ch, country, carrier }) }).then(res => res.json());
+      const msg = 'Loaded ' + result.recipients.length + ' recipients (' + result.emailCount + ' email, ' + result.smsCount + ' SMS)';
+      toast(r.success !== false ? 'success' : 'warning', msg);
+      addLog(msg, r.success !== false ? 'ok' : 'warn');
+      appState.recipients = await fetch('/api/recipients/list').then(res => res.json()).then(d => d.recipients || []);
+      saveAppState();
+      await refreshRecipStats();
+    }
+
+    async function refreshRecipStats() {
+      const r = await fetch('/api/recipients/count').then(res => res.json()).catch(() => ({}));
+      set('recipTotal', r.count ?? 0); set('recipEmail', r.email ?? 0); set('recipSms', r.sms ?? 0);
+      set('topRecipCount', r.count ?? 0);
+      document.getElementById('recipientCountBadge').textContent = (r.count ?? 0) + ' loaded';
+      document.getElementById('contactsCountBadge').textContent = (r.count ?? 0) + ' contacts';
+      await loadRecipientsList();
+    }
+
+    let allRecipients = [], filteredRecipients = [], recipientsCurrentPage = 1, recipientsPageSize = 25, recipientsSearchQuery = '';
+
+    async function loadRecipientsList() {
+      const data = await fetch('/api/recipients/list').then(res => res.json()).catch(() => ({ recipients: [] }));
+      allRecipients = data.recipients || [];
+      filteredRecipients = allRecipients.slice();
+      if (recipientsSearchQuery.trim()) {
+        const q = recipientsSearchQuery.toLowerCase().trim();
+        filteredRecipients = allRecipients.filter(r => r.address.toLowerCase().includes(q) || (r.name && r.name.toLowerCase().includes(q)));
+      }
+      renderRecipientsTable();
+    }
+
+    function renderRecipientsTable() {
+      const tbody = document.getElementById('recipientsTableBody');
+      const total = filteredRecipients.length;
+      const totalPages = Math.ceil(total / recipientsPageSize) || 1;
+      if (recipientsCurrentPage > totalPages) recipientsCurrentPage = totalPages;
+      if (recipientsCurrentPage < 1) recipientsCurrentPage = 1;
+      const start = (recipientsCurrentPage - 1) * recipientsPageSize;
+      const end = Math.min(start + recipientsPageSize, total);
+      const pageItems = filteredRecipients.slice(start, end);
+      document.getElementById('recipShowStart').textContent = total > 0 ? start + 1 : 0;
+      document.getElementById('recipShowEnd').textContent = end;
+      document.getElementById('recipTotalCount').textContent = total;
+      document.getElementById('recipPageInfo').textContent = 'Page ' + recipientsCurrentPage + ' of ' + totalPages;
+      document.getElementById('recipPrevBtn').disabled = recipientsCurrentPage <= 1;
+      document.getElementById('recipNextBtn').disabled = recipientsCurrentPage >= totalPages;
+      if (!pageItems.length) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><p>' + (allRecipients.length === 0 ? 'No contacts loaded yet' : 'No matching contacts') + '</p></div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = pageItems.map((r, i) => {
+        const idx = start + i + 1;
+        const chIcon = r.channel === 'sms' ? '✉' : '✉';
+        return '<tr><td style="font-family:var(--mono);color:var(--muted2);font-size:11px;">' + idx + '</td><td style="font-family:var(--mono);font-size:12px;color:var(--text);">' + r.address + '</td><td>' + (r.name || '<span style="color:var(--muted2);font-size:11px;">-</span>') + '</td><td>' + chIcon + ' ' + (r.channel || 'email') + '</td><td style="font-size:11px;color:var(--muted2);">' + (r.carrier || '-') + '</td><td><button class="btn btn-danger btn-xs" onclick="removeRecipient(' + idx + ')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td></tr>';
+      }).join('');
+    }
+
+    function filterRecipients() { recipientsSearchQuery = document.getElementById('recipientSearchInput').value; recipientsCurrentPage = 1; loadRecipientsList(); }
+    function prevRecipientsPage() { if (recipientsCurrentPage > 1) { recipientsCurrentPage--; renderRecipientsTable(); } }
+    function nextRecipientsPage() { const totalPages = Math.ceil(filteredRecipients.length / recipientsPageSize) || 1; if (recipientsCurrentPage < totalPages) { recipientsCurrentPage++; renderRecipientsTable(); } }
+    function changeRecipientsPageSize() { recipientsPageSize = parseInt(document.getElementById('recipPageSize').value); recipientsCurrentPage = 1; renderRecipientsTable(); }
+
+    async function removeRecipient(index) {
+      if (!confirm('Remove this contact?')) return;
+      const start = (recipientsCurrentPage - 1) * recipientsPageSize;
+      const actualIndex = start + index - 1;
+      if (actualIndex >= 0 && actualIndex < filteredRecipients.length) {
+        const r = filteredRecipients[actualIndex];
+        const resp = await fetch('/api/recipients/remove', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address: r.address }) }).then(res => res.json());
+        if (resp.success) { toast('success', 'Removed ' + r.address); appState.recipients = await fetch('/api/recipients/list').then(res => res.json()).then(d => d.recipients || []); saveAppState(); await refreshRecipStats(); }
+        else toast('error', resp.message || 'Failed to remove');
+      }
+    }
+
+    async function clearRecipients() {
+      if (!confirm('Remove ALL loaded recipients?')) return;
+      const r = await fetch('/api/recipients/clear', { method: 'POST' }).then(res => res.json());
+      if (r.success) { toast('success', 'All recipients cleared'); allRecipients = []; filteredRecipients = []; renderRecipientsTable(); appState.recipients = []; saveAppState(); await refreshRecipStats(); }
+      else toast('error', r.message || 'Failed to clear');
+    }
+
+    function exportRecipientsCSV() {
+      if (!allRecipients.length) return toast('error', 'No contacts to export');
+      let csv = 'Address,Name,Channel,Carrier\n';
+      allRecipients.forEach(r => csv += '"' + r.address + '","' + (r.name || '') + '","' + (r.channel || 'email') + '","' + (r.carrier || '') + '"\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'recipients.csv'; a.click();
+      toast('success', 'Exported ' + allRecipients.length + ' contacts');
+    }
+
+    // ============================================
+    // SEGMENTS
+    // ============================================
+    function createSegment() {
+      const name = prompt('Enter segment name:', 'Segment ' + (document.querySelectorAll('.segment-badge').length + 1));
+      if (!name) return;
+      const list = document.getElementById('segmentList');
+      const empty = list.querySelector('.card[style*="dashed"]');
+      if (empty) empty.remove();
+      const seg = document.createElement('div');
+      seg.className = 'card';
+      seg.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px"><div><div style="font-weight:600;font-size:14px;color:var(--text);">' + name + '</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">' + Math.floor(Math.random() * 100) + ' recipients</div></div><span class="segment-badge active"><svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>Active</span></div><div style="margin-top:10px;font-size:11px;color:var(--muted2);">Tags: ' + name.toLowerCase().replace(/\s/g, ', ') + '</div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;"><button class="btn btn-ghost btn-xs" onclick="viewSegment(this)"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.5"/></svg>View</button><button class="btn btn-ghost btn-xs" onclick="editSegment(this)"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>Edit</button><button class="btn btn-danger btn-xs" onclick="deleteSegment(this)"><svg viewBox="0 0 24 24" width="13" height="13"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></svg></button></div>';
+      list.appendChild(seg);
+      const segments = StorageManager.getItem('segments') || [];
+      segments.push({ name, created: Date.now(), active: true });
+      StorageManager.setItem('segments', segments);
+      toast('success', 'Segment "' + name + '" created!');
+    }
+    function viewSegment(btn) { const name = btn.closest('.card').querySelector('div div div:first-child').textContent; toast('info', '📊 Segment "' + name + '"'); }
+    function editSegment(btn) { const card = btn.closest('.card'); const nameEl = card.querySelector('div div div:first-child'); const newName = prompt('Edit segment name:', nameEl.textContent); if (newName && newName.trim()) { nameEl.textContent = newName.trim(); toast('success', 'Segment renamed'); } }
+    function deleteSegment(btn) { if (confirm('Delete this segment?')) { btn.closest('.card').remove(); toast('success', 'Segment deleted'); } }
+
+    // ============================================
+    // TEMPLATES
+    // ============================================
+    function createTemplate() {
+      const name = prompt('Enter template name:', 'Template ' + (document.querySelectorAll('.template-card').length + 1));
+      if (!name) return;
+      const grid = document.getElementById('templateGrid');
+      const card = document.createElement('div');
+      card.className = 'template-card';
+      card.onclick = function() { useCustomTemplate(name); };
+      card.innerHTML = '<div class="template-badge" style="background:var(--accent)20;color:var(--accent);">Custom</div><div class="template-icon"><svg viewBox="0 0 24 24" width="28" height="28"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg></div><div class="template-name">' + name + '</div><div class="template-desc">Custom template</div>';
+      grid.appendChild(card);
+      const templates = StorageManager.getItem('templates') || [];
+      templates.push({ name, content: '', created: Date.now() });
+      StorageManager.setItem('templates', templates);
+      toast('success', 'Template "' + name + '" created!');
+    }
+
+    function useCustomTemplate(name) {
+      document.getElementById('campName').value = name + ' Campaign';
+      document.getElementById('campSubject').value = 'Subject for ' + name;
+      document.getElementById('msgBodyPlain').value = 'Hi {{name}},\n\nThis is your ' + name + ' template.\n\nBest,\nThe Team';
+      toast('success', 'Template "' + name + '" loaded!');
+      showPanel('compose');
+      updateCharCount();
+    }
+
+    function useTemplate(name) {
+      const templates = {
+        welcome: { subject: 'Welcome aboard!', body: 'Hi {{name}},\n\nThanks for joining us!' },
+        newsletter: { subject: 'Weekly Newsletter', body: 'Hi {{name}},\n\nHere\'s what\'s new this week:' },
+        promo: { subject: 'Special offer just for you!', body: 'Hi {{name}},\n\nWe\'re running a special promotion.' },
+        announcement: { subject: 'Big news!', body: 'Hi {{name}},\n\nWe\'re thrilled to announce our biggest update yet!' },
+        transactional: { subject: 'Order Confirmation', body: 'Hi {{name}},\n\nThank you for your order!' },
+        survey: { subject: 'We need your feedback!', body: 'Hi {{name}},\n\nWe value your opinion!' }
+      };
+      const t = templates[name];
+      if (t) {
+        document.getElementById('campSubject').value = t.subject;
+        document.getElementById('msgBodyPlain').value = t.body;
+        document.getElementById('campName').value = name.charAt(0).toUpperCase() + name.slice(1) + ' Campaign';
+        toast('success', '"' + name + '" template loaded!');
+        showPanel('compose');
+        updateCharCount();
+      }
+    }
+
+    // ============================================
+    // COMPOSE
+    // ============================================
+    let activeMsgTab = 'plain';
+    function switchMsgTab(tab, btn) {
+      activeMsgTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      if (tab === 'preview') updatePreview();
+    }
+    function updatePreview() {
+      const isHtml = document.getElementById('htmlModeToggle').checked;
+      const body = isHtml ? document.getElementById('msgBodyHtml').value : document.getElementById('msgBodyPlain').value;
+      document.getElementById('msgPreviewFrame').innerHTML = isHtml ? body : '<pre style="white-space:pre-wrap;font-family:inherit;font-size:13px;color:#333">' + body + '</pre>';
+    }
+    function previewMessage() { switchMsgTab('preview', document.querySelectorAll('.tab-btn')[2]); }
+    function updateCharCount() {
+      const isHtml = document.getElementById('htmlModeToggle').checked;
+      const el = isHtml ? document.getElementById('msgBodyHtml') : document.getElementById('msgBodyPlain');
+      if (!el) return;
+      const len = el.value.length;
+      document.getElementById('charCount').textContent = len + ' characters';
+      const seg = Math.ceil(len / 160);
+      document.getElementById('smsSegments').textContent = len > 0 ? seg + ' SMS segment' + (seg > 1 ? 's' : '') : '';
+    }
+    document.addEventListener('input', e => { if (e.target.id === 'msgBodyPlain' || e.target.id === 'msgBodyHtml' || e.target.id === 'htmlModeToggle') updateCharCount(); });
+
+    async function checkSpamScore() {
+      const isHtml = document.getElementById('htmlModeToggle').checked;
+      const subject = document.getElementById('campSubject').value;
+      const body = isHtml ? document.getElementById('msgBodyHtml').value : document.getElementById('msgBodyPlain').value;
+      if (!body.trim()) return toast('error', 'Write a message body first');
+      const r = await fetch('/api/spam/score', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ subject, body, is_html: isHtml }) }).then(res => res.json());
+      const display = document.getElementById('spamScoreDisplay');
+      const score = r.score || 0;
+      const grade = r.grade || 'Unknown';
+      const color = r.color === 'green' ? 'var(--green)' : r.color === 'red' ? 'var(--red)' : 'var(--amber)';
+      display.style.color = color;
+      display.innerHTML = 'Spam Score: ' + score + '/100 (' + grade + ')';
+    }
+
+    async function createAndLaunch() {
+      const name = document.getElementById('campName').value.trim();
+      const subject = document.getElementById('campSubject').value.trim();
+      const isHtml = document.getElementById('htmlModeToggle').checked;
+      const body = isHtml ? document.getElementById('msgBodyHtml').value : document.getElementById('msgBodyPlain').value;
+      const channel = document.getElementById('campChannel').value;
+      if (!name || !subject || !body.trim()) return toast('error', 'Fill in all fields');
+      const cr = await fetch('/api/campaign/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, subject, body, is_html: isHtml, channel }) }).then(res => res.json());
+      if (!cr.success) return toast('error', cr.message);
+      const sr = await fetch('/api/campaign/start/' + cr.campaign_id, { method: 'POST' }).then(res => res.json());
+      if (sr.success) { activeCampaignId = cr.campaign_id; toast('success', 'Campaign "' + name + '" launched!'); addLog('Campaign "' + name + '" started', 'info'); showPanel('campaigns'); loadCampaigns(); }
+      else toast('error', sr.message);
+    }
+
+    async function scheduleCampaign() {
+      const date = document.getElementById('campSchedule').value;
+      if (!date) return toast('error', 'Select a date/time first');
+      toast('info', 'Campaign scheduled for ' + new Date(date).toLocaleString());
+    }
+
+    async function saveDraft() {
+      const name = document.getElementById('campName').value.trim() || 'Draft';
+      const subject = document.getElementById('campSubject').value.trim();
+      const isHtml = document.getElementById('htmlModeToggle').checked;
+      const body = isHtml ? document.getElementById('msgBodyHtml').value : document.getElementById('msgBodyPlain').value;
+      const channel = document.getElementById('campChannel').value;
+      const r = await fetch('/api/campaign/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, subject, body, is_html: isHtml, channel }) }).then(res => res.json());
+      toast(r.success ? 'success' : 'error', r.success ? 'Draft saved' : r.message);
+      if (r.success) loadCampaigns();
+    }
+
+    // ============================================
+    // CAMPAIGNS
+    // ============================================
+    async function loadCampaigns() {
+      const camps = await fetch('/api/campaigns').then(res => res.json()).catch(() => []);
+      const tbody = document.getElementById('campTableBody');
+      if (!camps.length) { tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><svg viewBox="0 0 24 24"><path d="M4 11v2"/><path d="M7 9.5v5"/><path d="M10 7.5v9"/><path d="M13 5.5v13"/><path d="M16 8l4-2v12l-4-2"/></svg><p>No campaigns yet</p></div></td></tr>'; return; }
+      tbody.innerHTML = camps.slice().reverse().map(c => {
+        const pct = c.total > 0 ? Math.round((c.sent / c.total) * 100) : 0;
+        return '<tr><td style="font-weight:500">' + c.name + '</td><td><span style="font-size:11px;color:var(--muted2)">' + c.channel + '</span></td><td><span class="status-pill ' + c.status + '">' + c.status + '</span></td><td style="font-family:var(--mono);color:var(--green)">' + c.sent + '</td><td style="font-family:var(--mono);color:var(--red)">' + c.failed + '</td><td style="font-family:var(--mono);color:var(--accent)">' + (c.sent > 0 ? Math.round((c.opens / c.sent) * 100) : 0) + '%</td><td style="font-family:var(--mono);color:var(--cyan)">' + (c.sent > 0 ? Math.round((c.clicks / c.sent) * 100) : 0) + '%</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="width:80px;height:4px"><div class="progress-fill" style="width:' + pct + '%"></div></div><span style="font-size:11px;font-family:var(--mono);color:var(--muted)">' + pct + '%</span></div></td><td><div class="btn-group">' + (c.status === 'running' ? '<button class="btn btn-danger btn-sm" onclick="stopCampaign()"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/></svg></button>' : '') + (c.status === 'done' ? '<button class="btn btn-ghost btn-sm" onclick="exportCampaign(\'' + c.id + '\')"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>' : '') + '<button class="btn btn-ghost btn-sm" onclick="watchCampaign(\'' + c.id + '\')"><svg viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></svg></button></div></td></tr>';
+      }).join('');
+    }
+
+    async function watchCampaign(cid) {
+      activeCampaignId = cid;
+      document.getElementById('campLiveCard').style.display = '';
+      const liveLog = document.getElementById('campLiveLog');
+      liveLog.innerHTML = '';
+      const cs = await fetch('/api/campaign/status/' + cid).then(res => res.json()).catch(() => ({}));
+      (cs.recent_results || []).forEach(r => {
+        const e = document.createElement('div');
+        e.className = 'log-entry';
+        e.innerHTML = '<span class="log-time">' + (r.timestamp ? r.timestamp.slice(11, 19) : '') + '</span><span class="log-msg ' + (r.success ? 'ok' : 'err') + '">' + r.recipient + (r.error ? ' - ' + r.error : '') + '</span>';
+        liveLog.appendChild(e);
+      });
+      liveLog.scrollTop = liveLog.scrollHeight;
+    }
+
+    async function stopCampaign() { await fetch('/api/campaign/stop', { method: 'POST' }); toast('info', 'Stop signal sent'); addLog('Stop requested', 'warn'); await refreshDashboard(); }
+    function exportCampaign(cid) { window.open('/api/campaign/export/' + cid, '_blank'); toast('success', 'Downloading CSV...'); }
+
+    // ============================================
+    // AUTOMATION
+    // ============================================
+    let automations = [];
+    function createAutomation() { document.getElementById('automationBuilder').style.display = ''; toast('info', 'Automation builder opened'); }
+    function toggleAutomationBuilder() { const b = document.getElementById('automationBuilder'); b.style.display = b.style.display === 'none' ? '' : 'none'; }
+    function loadAutomations() {
+      const saved = StorageManager.getItem('automations') || [];
+      automations = saved;
+      document.getElementById('automationCount').textContent = automations.length + ' active';
+      const list = document.getElementById('automationList');
+      const empty = list.querySelector('.empty-state');
+      if (automations.length === 0) {
+        if (!empty) list.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4"/><circle cx="12" cy="3" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8 16h8"/></svg><p>No automation flows created yet</p></div>';
+        return;
+      }
+      if (empty) empty.remove();
+      list.innerHTML = automations.map((flow, idx) => '<div class="automation-flow" style="margin-bottom:12px"><div class="automation-step"><span class="step-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4V8Z"/></svg></span><span class="step-label">' + flow.name + '</span><span class="status-pill done" style="font-size:10px">Active</span></div><span class="automation-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span><div class="automation-step"><span class="step-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span class="step-label">Email 1</span></div><span class="automation-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span><div class="automation-step"><span class="step-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="step-label">Delay 1h</span></div><span class="automation-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span><div class="automation-step"><span class="step-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span class="step-label">Email 2</span></div><button class="btn btn-ghost btn-xs" style="margin-left:auto" onclick="deleteAutomation(' + idx + ')"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg></button></div>').join('');
+    }
+    function deleteAutomation(idx) { if (confirm('Delete this automation?')) { automations.splice(idx, 1); StorageManager.setItem('automations', automations); loadAutomations(); toast('success', 'Automation deleted'); } }
+    function saveAutomation() {
+      const name = document.getElementById('automationBuilderName').textContent || 'Untitled Flow';
+      const flow = { id: Date.now(), name, status: 'active', created: new Date().toISOString(), delay: '1h', steps: ['trigger', 'delay', 'email1', 'delay', 'email2'] };
+      automations.push(flow);
+      StorageManager.setItem('automations', automations);
+      toast('success', 'Automation "' + name + '" saved!');
+      toggleAutomationBuilder();
+      loadAutomations();
+    }
+
+    // ============================================
+    // ANALYTICS
+    // ============================================
+    async function refreshAnalytics() {
+      const stats = await fetch('/api/stats').then(res => res.json()).catch(() => ({}));
+      const camps = await fetch('/api/campaigns').then(res => res.json()).catch(() => []);
+      set('analyticsOpens', stats.total_opens ?? 0);
+      set('analyticsClicks', stats.total_clicks ?? 0);
+      const totalSent = stats.session_sent ?? 0;
+      set('analyticsOpenRate', stats.total_opens && totalSent ? ((stats.total_opens / totalSent) * 100).toFixed(1) + '%' : '-');
+      set('analyticsClickRate', stats.total_clicks && totalSent ? ((stats.total_clicks / totalSent) * 100).toFixed(1) + '%' : '-');
+      let best = { name: '-', rate: 0 };
+      camps.forEach(c => { if (c.sent > 0) { const r = (c.opens / c.sent) * 100; if (r > best.rate) { best = { name: c.name, rate: r }; } } });
+      set('analyticsBestCamp', best.name);
+      set('analyticsRecipients', stats.recipient_count ?? 0);
+      const tbody = document.getElementById('analyticsTableBody');
+      if (!camps.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="2.5" height="5" rx=".5"/><rect x="11" y="9" width="2.5" height="8" rx=".5"/><rect x="15" y="6" width="2.5" height="11" rx=".5"/></svg><p>No data yet</p></div></td></tr>'; return; }
+      tbody.innerHTML = camps.map(c => '<tr><td style="font-weight:500">' + c.name + '</td><td style="font-family:var(--mono)">' + c.sent + '</td><td style="font-family:var(--mono);color:var(--accent)">' + c.opens + '</td><td style="font-family:var(--mono);color:var(--green)">' + (c.sent > 0 ? Math.round((c.opens / c.sent) * 100) : 0) + '%</td><td style="font-family:var(--mono);color:var(--cyan)">' + c.clicks + '</td><td style="font-family:var(--mono);color:var(--amber)">' + (c.sent > 0 ? Math.round((c.clicks / c.sent) * 100) : 0) + '%</td></tr>').join('');
+    }
+
+    // ============================================
+    // DASHBOARD
+    // ============================================
+    async function refreshDashboard() {
+      const stats = await fetch('/api/stats').then(res => res.json()).catch(() => ({}));
+      const recip = await fetch('/api/recipients/count').then(res => res.json()).catch(() => ({}));
+      set('dashSmtp', stats.smtp_count ?? 0);
+      set('dashRecip', recip.count ?? 0);
+      set('dashCamps', stats.campaign_count ?? 0);
+      set('dashSent', stats.session_sent ?? 0);
+      set('dashFailed', stats.session_failed ?? 0);
+      const total = (stats.session_sent ?? 0) + (stats.session_failed ?? 0);
+      set('dashRate', total > 0 ? ((stats.session_sent / total) * 100).toFixed(1) + '%' : '-');
+      set('dashOpenRate', stats.total_opens && stats.session_sent ? ((stats.total_opens / stats.session_sent) * 100).toFixed(1) + '%' : '-');
+      set('dashClickRate', stats.total_clicks && stats.session_sent ? ((stats.total_clicks / stats.session_sent) * 100).toFixed(1) + '%' : '-');
+      set('topSmtpCount', stats.smtp_count ?? 0);
+      set('topSentCount', stats.session_sent ?? 0);
+      set('topFailCount', stats.session_failed ?? 0);
+      const dot = document.getElementById('statusDot');
+      const txt = document.getElementById('statusText');
+      if (stats.active_campaign) { dot.classList.add('sending'); txt.textContent = 'Sending...'; activeCampaignId = stats.active_campaign; document.getElementById('activeCampaignCard').style.display = ''; document.getElementById('activeCampName').textContent = stats.active_campaign; }
+      else { dot.classList.remove('sending'); txt.textContent = 'Idle'; document.getElementById('activeCampaignCard').style.display = 'none'; }
+      const list = document.getElementById('smtpHealthList');
+      if (stats.smtp_count > 0) {
+        const smtps = await fetch('/api/smtp/list').then(res => res.json());
+        list.innerHTML = smtps.map(s => {
+          const hpct = Math.round(s.health * 100);
+          const hcol = hpct > 60 ? 'var(--green)' : hpct > 30 ? 'var(--amber)' : 'var(--red)';
+          return '<div class="smtp-row"><span class="smtp-email">' + s.email + '</span><span class="smtp-server">' + s.server + ':' + s.port + '</span><div class="smtp-health-bar"><div class="smtp-health-fill" style="width:' + hpct + '%;background:' + hcol + '"></div></div><span style="font-size:10px;font-family:var(--mono);color:' + hcol + ';width:32px">' + hpct + '%</span></div>';
+        }).join('');
+      } else { list.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/><path d="M7 8h10"/><path d="M7 12h5"/></svg><p>No SMTP servers loaded yet</p></div>'; }
+      if (activeCampaignId) {
+        const cs = await fetch('/api/campaign/status/' + activeCampaignId).then(res => res.json()).catch(() => ({}));
+        if (cs.total) { document.getElementById('dashProgress').style.width = cs.progress + '%'; set('dashProgressPct', cs.progress.toFixed(1) + '%'); set('dashProgressDetail', cs.sent + ' sent / ' + cs.failed + ' failed / ' + cs.total + ' total'); }
+      }
+    }
+
+    // ============================================
+    // SETTINGS
+    // ============================================
+    async function loadSettings() {
+      const s = await fetch('/api/settings').then(res => res.json()).catch(() => ({}));
+      appState.settings = { ...appState.settings, ...s };
+      saveAppState();
+      setVal('setConcurrency', appState.settings.concurrency);
+      setVal('setDelay', appState.settings.delay_between);
+      setVal('setRetries', appState.settings.max_retries);
+      setVal('setTimeout', appState.settings.timeout);
+      setVal('setDailyLimit', appState.settings.daily_limit);
+      setVal('setFromName', appState.settings.from_name);
+      setVal('setFromAddress', appState.settings.from_address);
+      setVal('setReplyTo', appState.settings.reply_to);
+      setVal('setPhysicalAddr', appState.settings.physical_address);
+      setVal('setTestRecipient', appState.settings.test_recipient);
+      document.getElementById('unsubToggle').checked = appState.settings.unsubscribe_footer;
+      document.getElementById('autoTestToggle').checked = appState.settings.auto_test_on_upload;
+      document.getElementById('whitelistToggle').checked = appState.settings.whitelist_mode;
+      if (appState.settings.whitelist_esp) setVal('whitelistEsp', appState.settings.whitelist_esp);
+    }
+
+    async function saveSettings() {
+      const data = {
+        concurrency: +getVal('setConcurrency'),
+        delay_between: +getVal('setDelay'),
+        max_retries: +getVal('setRetries'),
+        timeout: +getVal('setTimeout'),
+        daily_limit: +getVal('setDailyLimit'),
+        from_name: getVal('setFromName'),
+        from_address: getVal('setFromAddress'),
+        reply_to: getVal('setReplyTo'),
+        physical_address: getVal('setPhysicalAddr'),
+        test_recipient: getVal('setTestRecipient'),
+        unsubscribe_footer: document.getElementById('unsubToggle').checked,
+        auto_test_on_upload: document.getElementById('autoTestToggle').checked,
+        whitelist_mode: document.getElementById('whitelistToggle').checked,
+        whitelist_esp: getVal('whitelistEsp')
+      };
+      const r = await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(res => res.json());
+      appState.settings = { ...appState.settings, ...data };
+      saveAppState();
+      toast(r.success ? 'success' : 'error', r.success ? 'Settings saved' : r.message);
+    }
+
+    function toggleWhitelistPanel() {
+      document.getElementById('whitelistPanel').style.display = document.getElementById('whitelistToggle').checked ? '' : 'none';
+      if (document.getElementById('whitelistToggle').checked) updateWhitelistInfo();
+    }
+    function updateWhitelistInfo() {
+      const esp = getVal('whitelistEsp');
+      const ips = { SendGrid: ['192.168.1.1', '10.0.0.1'], Mailgun: ['172.16.0.1'], 'Amazon SES': ['203.0.113.1'], Postmark: ['198.51.100.1'], 'Custom SMTP': ['Enter your IPs here'] }[esp] || [];
+      document.getElementById('whitelistIpList').innerHTML = ips.map(ip => '<div class="ip-chip" onclick="copyText(\'' + ip + '\', this)">' + ip + '</div>').join('');
+    }
+    function copyText(text, el) { navigator.clipboard.writeText(text); el.textContent = '✓ Copied!'; setTimeout(() => el.textContent = text, 1500); }
+
+    // ============================================
+    // HELPERS
+    // ============================================
+    function set(id, val) { const e = document.getElementById(id); if (e) e.textContent = val; }
+    function setVal(id, val) { const e = document.getElementById(id); if (e) e.value = val; }
+    function getVal(id) { const e = document.getElementById(id); return e ? e.value : ''; }
+
+    function addLog(msg, type) {
+      const feed = document.getElementById('logFeed');
+      const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
+      const e = document.createElement('div');
+      e.className = 'log-entry';
+      e.innerHTML = '<span class="log-time">' + ts + '</span><span class="log-msg ' + (type || '') + '">' + msg + '</span>';
+      feed.appendChild(e);
+      feed.scrollTop = feed.scrollHeight;
+      while (feed.children.length > 200) feed.removeChild(feed.firstChild);
+    }
+    function clearLog() { document.getElementById('logFeed').innerHTML = ''; }
+
+    function toast(type, msg) {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast toast-' + type;
+      t.innerHTML = '<span>' + msg + '</span>';
+      c.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+
+    // ============================================
+    // INIT
+    // ============================================
+    window.addEventListener('DOMContentLoaded', function() {
+      const savedTheme = StorageManager.getItem('theme');
+      if (savedTheme === 'dark') { document.documentElement.classList.add('dark-mode'); document.getElementById('themeIcon').innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>'; document.getElementById('themeText').textContent = 'Light'; }
+      const savedSidebar = StorageManager.getItem('sidebarCollapsed');
+      if (savedSidebar === true) { sidebarCollapsed = true; document.getElementById('sidebar').classList.add('collapsed'); }
+      loadAppState();
+      updateCarrierList();
+      loadSettings();
+      refreshDashboard();
+      refreshSmtpList();
+      refreshRecipStats();
+      loadCampaigns();
+      loadAutomations();
+      refreshAnalytics();
+      setInterval(refreshDashboard, 3000);
+      console.log('🚀 CampaignForge v3.0 loaded');
+    });
+  </script>
+<script>
+// ============================================
+// DISABLE RIGHT CLICK & INSPECT ELEMENT
+// ============================================
+
+// Disable right click context menu
+//document.addEventListener('contextmenu', function(e) {
+//    e.preventDefault();
+//    return false;
+//});
+
+// Disable keyboard shortcuts for inspect element
+document.addEventListener('keydown', function(e) {
+    // F12 key
+    if (e.key === 'F12' || e.keyCode === 123) {
+        e.preventDefault();
+        return false;
+    }
+
+    // Ctrl+Shift+I (Inspect)
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.keyCode === 73)) {
+        e.preventDefault();
+        return false;
+    }
+
+    // Ctrl+Shift+J (Console)
+    if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.keyCode === 74)) {
+        e.preventDefault();
+        return false;
+    }
+
+    // Ctrl+Shift+C (Inspect Element)
+    if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.keyCode === 67)) {
+        e.preventDefault();
+        return false;
+    }
+
+    // Ctrl+U (View Source)
+    if (e.ctrlKey && (e.key === 'U' || e.keyCode === 85)) {
+        e.preventDefault();
+        return false;
+    }
+
+    // Ctrl+Shift+U (View Source alternative)
+    if (e.ctrlKey && e.shiftKey && (e.key === 'U' || e.keyCode === 85)) {
+        e.preventDefault();
+        return false;
+    }
+
+    // Ctrl+S (Save Page)
+    if (e.ctrlKey && (e.key === 'S' || e.keyCode === 83)) {
+        e.preventDefault();
+        return false;
+    }
+
+    // Ctrl+P (Print)
+    if (e.ctrlKey && (e.key === 'P' || e.keyCode === 80)) {
+        e.preventDefault();
+        return false;
+    }
+
+    // Ctrl+Shift+S (Save as)
+    if (e.ctrlKey && e.shiftKey && (e.key === 'S' || e.keyCode === 83)) {
+        e.preventDefault();
+        return false;
+    }
+
+    // Ctrl+Shift+P (Command Palette - Chrome)
+    if (e.ctrlKey && e.shiftKey && (e.key === 'P' || e.keyCode === 80)) {
+        e.preventDefault();
+        return false;
+    }
+
+    // Ctrl+Shift+O (DevTools - Chrome)
+    if (e.ctrlKey && e.shiftKey && (e.key === 'O' || e.keyCode === 79)) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+// Disable drag events
+//document.addEventListener('dragstart', function(e) {
+//    e.preventDefault();
+//    return false;
+//});
+
+// Disable select all
+//document.addEventListener('selectstart', function(e) {
+//    e.preventDefault();
+//    return false;
+//});
+
+// Disable copy
+//document.addEventListener('copy', function(e) {
+//    e.preventDefault();
+//    return false;
+//});
+
+// Disable cut
+//document.addEventListener('cut', function(e) {
+//    e.preventDefault();
+//    return false;
+//});
+
+// Prevent selection of text/images
+document.querySelectorAll('img, .logo, .card, .stat-tile, .template-card').forEach(el => {
+    el.style.userSelect = 'none';
+    el.style.webkitUserSelect = 'none';
+    el.style.msUserSelect = 'none';
+    el.style.draggable = 'false';
+});
+
+// Add CSS to prevent selection globally
+const style = document.createElement('style');
+style.textContent = `
+    body {
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+    }
+    img, svg {
+        -webkit-user-drag: none !important;
+        user-drag: none !important;
+    }
+    /* Allow selection in input fields and textareas */
+    input, textarea, select, [contenteditable="true"] {
+        user-select: text !important;
+        -webkit-user-select: text !important;
+        -moz-user-select: text !important;
+        -ms-user-select: text !important;
+    }
+`;
+document.head.appendChild(style);
+
+// Prevent context menu on images
+document.querySelectorAll('img').forEach(img => {
+    img.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
+});
+
+// Prevent long press on mobile (select text)
+let touchTimer = null;
+document.addEventListener('touchstart', function(e) {
+    touchTimer = setTimeout(function() {
+        // Long press detected
+        e.preventDefault();
+    }, 500);
+});
+
+document.addEventListener('touchend', function(e) {
+    if (touchTimer) {
+        clearTimeout(touchTimer);
+        touchTimer = null;
+    }
+});
+
+document.addEventListener('touchmove', function(e) {
+    if (touchTimer) {
+        clearTimeout(touchTimer);
+        touchTimer = null;
+    }
+});
+
+console.log('🔒 Protection enabled: Right-click, Inspect Element, and DevTools are disabled.');
+</script>
+</body>
+</html>

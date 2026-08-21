@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampaignForge · Tracking</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f8f9fc;
+            --surface: #ffffff;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --border2: #cbd5e1;
+            --accent: #4f8ef7;
+            --accent2: #7c3aed;
+            --green: #10b981;
+            --red: #ef4444;
+            --amber: #f59e0b;
+            --cyan: #06b6d4;
+            --text: #1e293b;
+            --muted: #64748b;
+            --muted2: #94a3b8;
+            --mono: 'DM Mono', monospace;
+            --sans: 'DM Sans', sans-serif;
+            --display: 'Syne', sans-serif;
+            --shadow: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.08);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dark-mode {
+            --bg: #0b0d12;
+            --surface: #11141c;
+            --card: #161a25;
+            --border: #1f2430;
+            --border2: #2a3040;
+            --text: #e8eaf2;
+            --muted: #6b7280;
+            --muted2: #9ca3af;
+            --shadow: 0 1px 3px rgba(0,0,0,0.35);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-lg: 0 12px 32px rgba(0,0,0,0.5);
+        }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            transition: background-color 0.35s ease, color 0.25s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 480px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--border2);
+        }
+
+        .logo {
+            font-family: var(--display);
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .status-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: var(--transition);
+        }
+
+        .status-icon.tracking {
+            background: rgba(79, 142, 247, 0.1);
+            color: var(--accent);
+        }
+
+        .status-icon.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--green);
+        }
+
+        .status-icon.unsubscribe {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--red);
+        }
+
+        .status-icon.loading {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--amber);
+        }
+
+        .status-icon svg {
+            width: 32px;
+            height: 32px;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .status-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .status-sub {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .status-sub code {
+            font-family: var(--mono);
+            font-size: 11px;
+            background: var(--bg);
+            padding: 2px 8px;
+            border-radius: 6px;
+            color: var(--cyan);
+            border: 1px solid var(--border);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            font-family: var(--sans);
+            width: 100%;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.15), transparent);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover::after {
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #3b7de4);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(79, 142, 247, 0.25);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #5a9af8, var(--accent));
+            box-shadow: 0 4px 16px rgba(79, 142, 247, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--red), #dc2626);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: linear-gradient(135deg, #f87171, var(--red));
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--green), #059669);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: linear-gradient(135deg, #34d399, var(--green));
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 20px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            font-family: var(--mono);
+            background: rgba(79, 142, 247, 0.1);
+            color: var(--accent);
+            margin-top: 12px;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--green);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--red);
+        }
+
+        .meta-info {
+            font-size: 11px;
+            color: var(--muted2);
+            margin-top: 16px;
+            font-family: var(--mono);
+        }
+
+        .meta-info span {
+            display: inline-block;
+            margin: 0 8px;
+        }
+
+        .log-container {
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            max-height: 120px;
+            overflow-y: auto;
+            text-align: left;
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted2);
+            line-height: 1.8;
+        }
+
+        .log-container .log-entry {
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            display: flex;
+            gap: 10px;
+        }
+
+        .log-container .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-container .log-time {
+            color: var(--muted);
+            flex-shrink: 0;
+        }
+
+        .log-container .log-msg {
+            color: var(--muted2);
+            word-break: break-all;
+        }
+
+        .log-container .log-msg.ok {
+            color: var(--green);
+        }
+
+        .log-container .log-msg.err {
+            color: var(--red);
+        }
+
+        .log-container .log-msg.warn {
+            color: var(--amber);
+        }
+
+        .log-container .log-msg.info {
+            color: var(--accent);
+        }
+
+        /* Scrollbar */
+        .log-container::-webkit-scrollbar {
+            width: 3px;
+        }
+        .log-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .log-container::-webkit-scrollbar-thumb {
+            background: var(--border2);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 20px;
+            }
+            .logo {
+                font-size: 17px;
+            }
+            .logo-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+            .status-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 22px;
+            }
+            .status-icon svg {
+                width: 24px;
+                height: 24px;
+            }
+            .status-text {
+                font-size: 14px;
+            }
+            .status-sub {
+                font-size: 12px;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+            .meta-info {
+                font-size: 10px;
+            }
+            .log-container {
+                font-size: 10px;
+                max-height: 80px;
+                padding: 8px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .spinner {
+                animation-duration: 0.01ms;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+
+        <!-- Logo -->
+        <div class="logo">
+            <div class="logo-icon">CF</div>
+            CampaignForge
+            <span style="font-size:11px;font-weight:400;color:var(--muted2);font-family:var(--mono);">v3.0</span>
+        </div>
+
+        <!-- Status Display -->
+        <div id="statusDisplay">
+            <div class="status-icon tracking" id="statusIcon">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="m8 12 2.5 2.5L16 9"/>
+                </svg>
+            </div>
+            <div class="status-text" id="statusText">Processing Request</div>
+            <div class="status-sub" id="statusSub">Please wait while we process your request</div>
+            <div class="badge" id="statusBadge">Tracking ID: <span id="trackingIdDisplay">---</span></div>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider"></div>
+
+        <!-- Action Button -->
+        <button class="btn btn-danger" id="actionBtn" onclick="handleAction()">
+            <svg viewBox="0 0 24 24">
+                <path d="M4 7h16"/>
+                <path d="M10 11v6"/>
+                <path d="M14 11v6"/>
+                <path d="M6 7l1 14h10l1-14"/>
+                <path d="M9 7V4h6v3"/>
+            </svg>
+            <span id="btnText">Unsubscribe</span>
+        </button>
+
+        <!-- Log Container -->
+        <div class="log-container" id="logContainer">
+            <div class="log-entry">
+                <span class="log-time" id="logTime">--:--:--</span>
+                <span class="log-msg info" id="logMsg">Initializing tracking session...</span>
+            </div>
+        </div>
+
+        <!-- Meta Info -->
+        <div class="meta-info">
+            <span>CampaignForge v3.0</span>
+            <span>•</span>
+            <span id="eventTypeDisplay">Tracking</span>
+            <span>•</span>
+            <span id="ipDisplay">0.0.0.0</span>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // TRACKING PAGE LOGIC
+    // ============================================
+
+    const LOG = {
+        container: document.getElementById('logContainer'),
+        timeEl: document.getElementById('logTime'),
+        msgEl: document.getElementById('logMsg'),
+
+        add: function(message, type) {
+            const now = new Date();
+            const time = now.toTimeString().slice(0, 8);
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = '<span class="log-time">' + time + '</span><span class="log-msg ' + (type || '') + '">' + message + '</span>';
+            this.container.appendChild(entry);
+            this.container.scrollTop = this.container.scrollHeight;
+
+            // Keep last 20 entries
+            while (this.container.children.length > 20) {
+                this.container.removeChild(this.container.firstChild);
+            }
+
+            // Update log time display
+            if (this.timeEl) this.timeEl.textContent = time;
+            if (this.msgEl) {
+                this.msgEl.textContent = message;
+                this.msgEl.className = 'log-msg ' + (type || 'info');
+            }
+        }
+    };
+
+    // State
+    let state = {
+        tid: null,
+        type: null,
+        campaign: null,
+        recipient: null,
+        url: null,
+        mode: null,
+        ip: '0.0.0.0',
+        processed: false,
+        redirecting: false
+    };
+
+    // DOM Elements
+    const statusIcon = document.getElementById('statusIcon');
+    const statusText = document.getElementById('statusText');
+    const statusSub = document.getElementById('statusSub');
+    const statusBadge = document.getElementById('statusBadge');
+    const trackingIdDisplay = document.getElementById('trackingIdDisplay');
+    const eventTypeDisplay = document.getElementById('eventTypeDisplay');
+    const ipDisplay = document.getElementById('ipDisplay');
+    const actionBtn = document.getElementById('actionBtn');
+    const btnText = document.getElementById('btnText');
+
+    // ============================================
+    // ICON HELPERS
+    // ============================================
+
+    function getIcon(name) {
+        const icons = {
+            tracking: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg>',
+            success: '<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>',
+            unsubscribe: '<svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg>',
+            loading: '<svg viewBox="0 0 24 24"><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4.93 4.93l2.83 2.83"/><path d="M16.24 16.24l2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="M4.93 19.07l2.83-2.83"/><path d="M16.24 7.76l2.83-2.83"/></svg>',
+            click: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 15 5-5"/><path d="M10 15h5v-5"/></svg>',
+            open: '<svg viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.5"/></svg>'
+        };
+        return icons[name] || icons.tracking;
+    }
+
+    function setStatus(icon, text, sub, badgeText, iconClass) {
+        statusIcon.className = 'status-icon ' + (iconClass || 'tracking');
+        statusIcon.innerHTML = getIcon(icon);
+        statusText.textContent = text;
+        if (sub) statusSub.textContent = sub;
+        if (badgeText) {
+            statusBadge.textContent = badgeText;
+            statusBadge.style.display = '';
+        } else {
+            statusBadge.style.display = 'none';
+        }
+    }
+
+    function setButton(text, type, disabled, showSpinner) {
+        btnText.textContent = text;
+        actionBtn.className = 'btn ' + type;
+        actionBtn.disabled = disabled || false;
+
+        // Clear existing spinner
+        const existingSpinner = actionBtn.querySelector('.spinner');
+        if (existingSpinner) existingSpinner.remove();
+
+        if (showSpinner) {
+            const spinner = document.createElement('span');
+            spinner.className = 'spinner';
+            actionBtn.prepend(spinner);
+        }
+    }
+
+    // ============================================
+    // GET USER IP (via API)
+    // ============================================
+
+    async function getUserIP() {
+        try {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            state.ip = data.ip;
+            ipDisplay.textContent = data.ip;
+            return data.ip;
+        } catch (e) {
+            state.ip = 'unknown';
+            ipDisplay.textContent = 'unknown';
+            return 'unknown';
+        }
+    }
+
+    // ============================================
+    // RECORD TRACKING EVENT
+    // ============================================
+
+    async function recordEvent(type, tid, campaign, recipient, url) {
+        try {
+            const payload = {
+                type: type,
+                tid: tid,
+                campaign: campaign || 'unknown',
+                recipient: recipient || 'anonymous',
+                url: url || '',
+                device_id: StorageManager ? StorageManager.getDeviceId() : 'unknown'
+            };
+
+            const response = await fetch('/api/tracking/record', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            LOG.add(type + ' event recorded (ID: ' + result.event_id + ')', 'ok');
+            return result;
+        } catch (e) {
+            LOG.add('Failed to record event: ' + e.message, 'err');
+            return null;
+        }
+    }
+
+    // ============================================
+    // HANDLE UNSUBSCRIBE ACTION
+    // ============================================
+
+    function handleAction() {
+        if (state.processed) return;
+        if (state.redirecting) return;
+
+        // Record unsubscribe event
+        recordEvent('unsubscribe', state.tid, state.campaign, state.recipient, state.url);
+
+        // Update UI
+        state.processed = true;
+        setStatus('unsubscribe', 'Unsubscribed Successfully', 'You have been removed from this mailing list', 'Unsubscribe Complete', 'unsubscribe');
+        setButton('Unsubscribed', 'btn-success', true, false);
+        LOG.add('Unsubscribe confirmed for ' + (state.recipient || 'anonymous'), 'ok');
+
+        // Show "unsubscribed" state
+        statusSub.textContent = 'You will no longer receive emails from this campaign';
+
+        // Start redirect timer
+        state.redirecting = true;
+        startRedirectTimer();
+    }
+
+    // ============================================
+    // REDIRECT TIMER WITH SPINNER
+    // ============================================
+
+    function startRedirectTimer() {
+        let seconds = 5;
+        setStatus('loading', 'Redirecting in ' + seconds + 's...', 'Please wait while we process your request', 'Redirect pending', 'loading');
+        setButton('Redirecting...', 'btn-primary', true, true);
+
+        const interval = setInterval(function() {
+            seconds--;
+            if (seconds > 0) {
+                setStatus('loading', 'Redirecting in ' + seconds + 's...', 'Please wait while we process your request', 'Redirect pending', 'loading');
+            } else {
+                clearInterval(interval);
+                // Redirect to Google
+                window.location.href = 'https://www.google.com';
+            }
+        }, 1000);
+
+        // Also update log
+        let count = 5;
+        const logInterval = setInterval(function() {
+            count--;
+            if (count > 0) {
+                LOG.add('Redirecting in ' + count + 's...', 'warn');
+            } else {
+                clearInterval(logInterval);
+                LOG.add('Redirecting to google.com', 'info');
+            }
+        }, 1000);
+    }
+
+    // ============================================
+    // SIMPLE STORAGE (if not already defined)
+    // ============================================
+
+    if (typeof StorageManager === 'undefined') {
+        window.StorageManager = {
+            getDeviceId: function() {
+                let id = localStorage.getItem('cf_device_id');
+                if (!id) {
+                    id = 'DEV_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
+                    localStorage.setItem('cf_device_id', id);
+                }
+                return id;
+            }
+        };
+    }
+
+    // ============================================
+    // INIT
+    // ============================================
+
+    async function init() {
+        // Parse URL parameters
+        const params = new URLSearchParams(window.location.search);
+        state.tid = params.get('tid') || 'unknown';
+        state.type = params.get('type') || 'open';
+        state.campaign = params.get('campaign') || 'unknown';
+        state.recipient = params.get('recipient') || '';
+        state.url = params.get('url') || '';
+        state.mode = params.get('mode') || '';
+
+        // Update display
+        trackingIdDisplay.textContent = state.tid.slice(0, 16) + '...';
+        eventTypeDisplay.textContent = state.type.charAt(0).toUpperCase() + state.type.slice(1);
+
+        // Get user IP
+        await getUserIP();
+
+        // Log initial info
+        LOG.add('Tracking ID: ' + state.tid.slice(0, 16) + '...', 'info');
+        LOG.add('Event Type: ' + state.type, 'info');
+        LOG.add('Campaign: ' + state.campaign, 'info');
+
+        // Handle different modes
+        if (state.mode === 'pixel') {
+            // Pixel tracking - just record and return
+            setStatus('tracking', 'Tracking Pixel Loaded', 'Open event recorded for campaign ' + state.campaign, 'Pixel Loaded', 'tracking');
+            setButton('Tracking Complete', 'btn-success', true, false);
+            LOG.add('Tracking pixel loaded for ' + state.type, 'ok');
+
+            // Record the event
+            await recordEvent(state.type, state.tid, state.campaign, state.recipient, state.url);
+
+            // Make button show as completed
+            state.processed = true;
+            return;
+        }
+
+        // Click tracking - show unsubscribe option
+        if (state.type === 'click') {
+            setStatus('click', 'Link Click Detected', 'Campaign: ' + state.campaign, 'Click Event', 'tracking');
+            LOG.add('Click event recorded for campaign ' + state.campaign, 'ok');
+
+            // Record click event
+            await recordEvent('click', state.tid, state.campaign, state.recipient, state.url);
+
+            // Show unsubscribe button
+            setButton('Unsubscribe from this list', 'btn-danger', false, false);
+            statusSub.textContent = 'Click the button below to unsubscribe from this mailing list';
+            statusBadge.className = 'badge badge-danger';
+            statusBadge.textContent = 'Click to Unsubscribe';
+
+            // Update log
+            LOG.add('Click tracked. Unsubscribe available.', 'warn');
+
+            // If there's a URL, store it for redirect after unsubscribe
+            if (state.url) {
+                // Store original URL for potential redirect
+                LOG.add('Destination URL: ' + state.url.slice(0, 50) + '...', 'info');
+            }
+
+            return;
+        }
+
+        // Open tracking
+        if (state.type === 'open') {
+            setStatus('open', 'Email Opened', 'Campaign: ' + state.campaign, 'Open Event', 'tracking');
+            await recordEvent('open', state.tid, state.campaign, state.recipient, state.url);
+            setButton('Unsubscribe from this list', 'btn-danger', false, false);
+            statusSub.textContent = 'Click the button below to unsubscribe from this mailing list';
+            statusBadge.className = 'badge badge-danger';
+            statusBadge.textContent = 'Click to Unsubscribe';
+            LOG.add('Open tracked. Unsubscribe available.', 'warn');
+            return;
+        }
+
+        // Default - show tracking info
+        setStatus('tracking', 'Tracking Event', 'Type: ' + state.type + ' | Campaign: ' + state.campaign, 'Tracking Active', 'tracking');
+        setButton('Unsubscribe', 'btn-danger', false, false);
+        LOG.add('Tracking session initialized', 'info');
+    }
+
+    // ============================================
+    // THEME TOGGLE (for consistency)
+    // ============================================
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.classList.contains('dark-mode');
+        html.classList.toggle('dark-mode', !isDark);
+        localStorage.setItem('tracking_theme', isDark ? 'light' : 'dark');
+    }
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('tracking_theme');
+    if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark-mode');
+    }
+
+    // ============================================
+    // START
+    // ============================================
+
+    document.addEventListener('DOMContentLoaded', init);
+
+    console.log('CampaignForge v3.0 - Tracking Page');
+    console.log('Tracking ID:', new URLSearchParams(window.location.search).get('tid') || 'unknown');
+</script>
+
+</body>
+</html>
