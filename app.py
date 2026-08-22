@@ -2083,4 +2083,4 @@ if __name__ == "__main__":
     print("Windows:   Run as Administrator")
     print("="*70 + "\n")
     
-    app.run(debug=True, host='0.0.0.0', port=80, threaded=True)
+    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
