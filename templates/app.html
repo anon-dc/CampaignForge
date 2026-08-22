@@ -2645,6 +2645,34 @@ code {
               <select id="campChannel"><option value="email">Email only</option><option value="sms">SMS (Email-to-SMS)</option></select>
               <div class="field"><label>Schedule Send</label><div class="schedule-picker"><input type="datetime-local" id="campSchedule"><button class="btn btn-ghost btn-sm" onclick="scheduleCampaign()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Schedule</button></div></div>
             </div>
+            <!-- Attachments Card -->
+            <div class="card">
+                <div class="card-title">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                    </svg>
+                    Attachments
+                    <span class="badge badge-blue" id="attachmentCount">0 files</span>
+                    <button class="btn btn-primary btn-sm" onclick="document.getElementById('attachmentInput').click()" style="margin-left:auto">
+                        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        Add File
+                    </button>
+                    <input type="file" id="attachmentInput" style="display:none" multiple onchange="handleAttachments(this)">
+                </div>
+                <div id="attachmentList" class="smtp-list" style="max-height:150px;">
+                    <div class="empty-state" id="attachmentEmpty">
+                        <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                        <p>No attachments. Click "Add File" to attach files to your campaign.</p>
+                    </div>
+                </div>
+                <div style="font-size:11px;color:var(--muted);margin-top:8px;">
+                    <i class="fa-regular fa-circle-info" style="color:var(--accent);"></i>
+                    Supported files: images, PDFs, documents, ZIP archives. Max size: 10MB per file.
+                </div>
+            </div>
             <div class="card">
               <div class="card-title"><svg viewBox="0 0 24 24"><path d="M4 11v2"/><path d="M7 9.5v5"/><path d="M10 7.5v9"/><path d="M13 5.5v13"/><path d="M16 8l4-2v12l-4-2"/></svg> Quick Launch</div>
               <div class="toggle-row"><div class="toggle-info"><span>HTML Mode</span><small>Enable rich HTML email body</small></div><label class="toggle"><input type="checkbox" id="htmlModeToggle"><span class="toggle-slider"></span></label></div>
@@ -3256,17 +3284,47 @@ code {
     }
 
     async function createAndLaunch() {
-      const name = document.getElementById('campName').value.trim();
-      const subject = document.getElementById('campSubject').value.trim();
-      const isHtml = document.getElementById('htmlModeToggle').checked;
-      const body = isHtml ? document.getElementById('msgBodyHtml').value : document.getElementById('msgBodyPlain').value;
-      const channel = document.getElementById('campChannel').value;
-      if (!name || !subject || !body.trim()) return toast('error', 'Fill in all fields');
-      const cr = await fetch('/api/campaign/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, subject, body, is_html: isHtml, channel }) }).then(res => res.json());
-      if (!cr.success) return toast('error', cr.message);
-      const sr = await fetch('/api/campaign/start/' + cr.campaign_id, { method: 'POST' }).then(res => res.json());
-      if (sr.success) { activeCampaignId = cr.campaign_id; toast('success', 'Campaign "' + name + '" launched!'); addLog('Campaign "' + name + '" started', 'info'); showPanel('campaigns'); loadCampaigns(); }
-      else toast('error', sr.message);
+        var name = document.getElementById('campName').value.trim();
+        var subject = document.getElementById('campSubject').value.trim();
+        var isHtml = document.getElementById('htmlModeToggle').checked;
+        var body = isHtml ? document.getElementById('msgBodyHtml').value : document.getElementById('msgBodyPlain').value;
+        var channel = document.getElementById('campChannel').value;
+        
+        if (!name) return toast('error', 'Enter a campaign name');
+        if (!subject) return toast('error', 'Enter a subject line');
+        if (!body.trim()) return toast('error', 'Write a message body');
+    
+        // Include attachments
+        var attachments = campaignAttachments || [];
+    
+        var cr = await fetch('/api/campaign/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                name: name, 
+                subject: subject, 
+                body: body, 
+                is_html: isHtml, 
+                channel: channel,
+                attachments: attachments  // ← ADD THIS
+            })
+        }).then(function(res) { return res.json(); });
+    
+        if (!cr.success) return toast('error', cr.message);
+    
+        var sr = await fetch('/api/campaign/start/' + cr.campaign_id, { method: 'POST' }).then(function(res) { return res.json(); });
+        if (sr.success) {
+            activeCampaignId = cr.campaign_id;
+            toast('success', 'Campaign "' + name + '" launched!');
+            addLog('Campaign "' + name + '" started (ID: ' + cr.campaign_id + ')', 'info');
+            // Clear attachments after launch
+            campaignAttachments = [];
+            renderAttachments();
+            showPanel('campaigns');
+            loadCampaigns();
+        } else {
+            toast('error', sr.message);
+        }
     }
 
     async function scheduleCampaign() {
@@ -3276,14 +3334,28 @@ code {
     }
 
     async function saveDraft() {
-      const name = document.getElementById('campName').value.trim() || 'Draft';
-      const subject = document.getElementById('campSubject').value.trim();
-      const isHtml = document.getElementById('htmlModeToggle').checked;
-      const body = isHtml ? document.getElementById('msgBodyHtml').value : document.getElementById('msgBodyPlain').value;
-      const channel = document.getElementById('campChannel').value;
-      const r = await fetch('/api/campaign/create', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, subject, body, is_html: isHtml, channel }) }).then(res => res.json());
-      toast(r.success ? 'success' : 'error', r.success ? 'Draft saved' : r.message);
-      if (r.success) loadCampaigns();
+        var name = document.getElementById('campName').value.trim() || 'Draft';
+        var subject = document.getElementById('campSubject').value.trim();
+        var isHtml = document.getElementById('htmlModeToggle').checked;
+        var body = isHtml ? document.getElementById('msgBodyHtml').value : document.getElementById('msgBodyPlain').value;
+        var channel = document.getElementById('campChannel').value;
+        var attachments = campaignAttachments || [];
+        
+        var r = await fetch('/api/campaign/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                name: name, 
+                subject: subject, 
+                body: body, 
+                is_html: isHtml, 
+                channel: channel,
+                attachments: attachments
+            })
+        }).then(function(res) { return res.json(); });
+        
+        toast(r.success ? 'success' : 'error', r.success ? 'Draft saved' : r.message);
+        if (r.success) loadCampaigns();
     }
 
     // ============================================
@@ -3345,6 +3417,131 @@ code {
       toast('success', 'Automation "' + name + '" saved!');
       toggleAutomationBuilder();
       loadAutomations();
+    }
+
+    // ============================================
+    // ATTACHMENTS
+    // ============================================
+    
+    let campaignAttachments = [];
+    
+    async function handleAttachments(input) {
+        const files = input.files;
+        if (!files.length) return;
+        
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
+            // Check file size (10MB max)
+            if (file.size > 10 * 1024 * 1024) {
+                toast('error', 'File "' + file.name + '" exceeds 10MB limit');
+                continue;
+            }
+            
+            try {
+                // Upload file to server to get base64 encoding
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const response = await fetch('/api/campaign/upload_attachment', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    campaignAttachments.push(result.attachment);
+                    renderAttachments();
+                    toast('success', 'Added: ' + file.name);
+                } else {
+                    toast('error', 'Failed to add: ' + file.name);
+                }
+            } catch (e) {
+                toast('error', 'Error adding: ' + file.name);
+            }
+        }
+        
+        // Reset input
+        input.value = '';
+    }
+    
+    function renderAttachments() {
+        const list = document.getElementById('attachmentList');
+        const empty = document.getElementById('attachmentEmpty');
+        const count = document.getElementById('attachmentCount');
+        
+        count.textContent = campaignAttachments.length + ' files';
+        
+        if (!campaignAttachments.length) {
+            if (!empty) {
+                list.innerHTML = '<div class="empty-state" id="attachmentEmpty"><svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg><p>No attachments. Click "Add File" to attach files to your campaign.</p></div>';
+            }
+            return;
+        }
+        
+        // Remove empty state if exists
+        const emptyState = list.querySelector('.empty-state');
+        if (emptyState) emptyState.remove();
+        
+        // Build attachment list
+        list.innerHTML = campaignAttachments.map((att, index) => {
+            const sizeKB = Math.round(att.size / 1024);
+            const sizeLabel = sizeKB > 1024 ? (sizeKB / 1024).toFixed(1) + ' MB' : sizeKB + ' KB';
+            const icon = getFileIcon(att.filename);
+            
+            return '<div class="smtp-row" style="padding:8px 12px;">' +
+                '<span style="font-size:16px;color:var(--accent);flex-shrink:0;">' + icon + '</span>' +
+                '<span class="smtp-email" style="font-size:12px;flex:2;">' + att.filename + '</span>' +
+                '<span style="font-size:10px;color:var(--muted);font-family:var(--mono);">' + sizeLabel + '</span>' +
+                '<span style="font-size:10px;color:var(--muted2);">' + att.content_type + '</span>' +
+                '<button class="btn btn-danger btn-xs" onclick="removeAttachment(' + index + ')" style="padding:2px 6px;font-size:10px;">' +
+                '<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+                '</button></div>';
+        }).join('');
+    }
+    
+    function removeAttachment(index) {
+        const file = campaignAttachments[index];
+        if (file && confirm('Remove "' + file.filename + '"?')) {
+            campaignAttachments.splice(index, 1);
+            renderAttachments();
+            toast('info', 'Removed: ' + file.filename);
+        }
+    }
+    
+    function getFileIcon(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        const icons = {
+            'pdf': '<i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i>',
+            'doc': '<i class="fa-solid fa-file-word" style="color:#3b82f6;"></i>',
+            'docx': '<i class="fa-solid fa-file-word" style="color:#3b82f6;"></i>',
+            'xls': '<i class="fa-solid fa-file-excel" style="color:#22c55e;"></i>',
+            'xlsx': '<i class="fa-solid fa-file-excel" style="color:#22c55e;"></i>',
+            'ppt': '<i class="fa-solid fa-file-powerpoint" style="color:#f59e0b;"></i>',
+            'pptx': '<i class="fa-solid fa-file-powerpoint" style="color:#f59e0b;"></i>',
+            'jpg': '<i class="fa-solid fa-file-image" style="color:#8b5cf6;"></i>',
+            'jpeg': '<i class="fa-solid fa-file-image" style="color:#8b5cf6;"></i>',
+            'png': '<i class="fa-solid fa-file-image" style="color:#8b5cf6;"></i>',
+            'gif': '<i class="fa-solid fa-file-image" style="color:#8b5cf6;"></i>',
+            'svg': '<i class="fa-solid fa-file-image" style="color:#8b5cf6;"></i>',
+            'zip': '<i class="fa-solid fa-file-archive" style="color:#f59e0b;"></i>',
+            'rar': '<i class="fa-solid fa-file-archive" style="color:#f59e0b;"></i>',
+            '7z': '<i class="fa-solid fa-file-archive" style="color:#f59e0b;"></i>',
+            'txt': '<i class="fa-solid fa-file-lines" style="color:#64748b;"></i>',
+            'csv': '<i class="fa-solid fa-file-csv" style="color:#22c55e;"></i>',
+            'json': '<i class="fa-solid fa-file-code" style="color:#06b6d4;"></i>',
+            'xml': '<i class="fa-solid fa-file-code" style="color:#06b6d4;"></i>',
+            'html': '<i class="fa-solid fa-file-code" style="color:#06b6d4;"></i>',
+            'css': '<i class="fa-solid fa-file-code" style="color:#06b6d4;"></i>',
+            'js': '<i class="fa-solid fa-file-code" style="color:#06b6d4;"></i>',
+            'mp4': '<i class="fa-solid fa-file-video" style="color:#ec4899;"></i>',
+            'avi': '<i class="fa-solid fa-file-video" style="color:#ec4899;"></i>',
+            'mov': '<i class="fa-solid fa-file-video" style="color:#ec4899;"></i>',
+            'mp3': '<i class="fa-solid fa-file-audio" style="color:#ec4899;"></i>',
+            'wav': '<i class="fa-solid fa-file-audio" style="color:#ec4899;"></i>',
+        };
+        return icons[ext] || '<i class="fa-solid fa-file" style="color:#64748b;"></i>';
     }
 
     // ============================================

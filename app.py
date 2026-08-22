@@ -1,6 +1,7 @@
 """
 CampaignForge v3.0 — Professional Email & SMS Campaign Platform
 Upgraded with: SMTP killing, spoofing, advanced testing, spam scoring, SSL/TLS/NONE support
+Dynamic port configuration support
 """
 
 import os, re, csv, json, time, uuid, threading, smtplib, ssl, logging, base64, requests, socket
@@ -25,6 +26,10 @@ logger = logging.getLogger(__name__)
 Path("uploads").mkdir(exist_ok=True)
 Path("reports").mkdir(exist_ok=True)
 
+# ─── PORT CONFIGURATION ─────────────────────────────────────
+# Change this value to change the port throughout the application
+APP_PORT = 5000  # ← CHANGE THIS VALUE TO CHANGE THE PORT
+
 # 1x1 transparent GIF tracking pixel
 TRACKING_PIXEL = (
     b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00'
@@ -35,7 +40,6 @@ TRACKING_PIXEL = (
 # ─────────────────────────────────────────────
 # CARRIER GATEWAYS
 # ─────────────────────────────────────────────
-# Carrier gateways (same as frontend)
 CARRIER_GATEWAYS = {
     "USA": {
         "AT&T": "txt.att.net",
@@ -115,7 +119,6 @@ class SpamScoreCalculator:
         score = 0
         warnings = []
         
-        # Subject line checks
         if len(subject) > 50:
             score += 5
             warnings.append("Subject line > 50 characters")
@@ -126,10 +129,7 @@ class SpamScoreCalculator:
             score += 10
             warnings.append("Subject ends with multiple exclamation marks")
         
-        # Convert body to lowercase for checking
         body_lower = body.lower()
-        
-        # Check for spam triggers
         found_triggers = []
         for trigger in SPAM_TRIGGERS:
             if trigger.lower() in body_lower:
@@ -139,12 +139,10 @@ class SpamScoreCalculator:
         if found_triggers:
             warnings.append(f"Spam trigger words found: {', '.join(found_triggers[:5])}")
         
-        # Check for excessive punctuation
         if body.count("!") > 5:
             score += 8
             warnings.append("Excessive exclamation marks")
         
-        # Check for link density (rough estimate)
         if is_html:
             link_count = len(re.findall(r'href=["\']', body))
             text_length = len(re.sub(r'<[^>]+>', '', body))
@@ -152,12 +150,10 @@ class SpamScoreCalculator:
                 score += 5
                 warnings.append("High link-to-text ratio")
         
-        # Check for image-only content
         if is_html and not re.search(r'[a-zA-Z0-9]{20,}', body):
             score += 10
             warnings.append("Little text content, mostly images")
         
-        # Check for proper HTML structure
         if is_html:
             if '</body>' not in body.lower():
                 score += 3
@@ -166,7 +162,6 @@ class SpamScoreCalculator:
                 score += 2
                 warnings.append("Missing </html> tag")
         
-        # Determine grade
         if score <= 10:
             grade = "Excellent"
             color = "green"
@@ -264,6 +259,7 @@ class Campaign:
     progress: float = 0.0
     opens: int = 0
     clicks: int = 0
+    attachments: List[Dict] = field(default_factory=list)
 
 # ─────────────────────────────────────────────
 # SMTP CONNECTION HELPER
@@ -307,7 +303,7 @@ class CampaignEngine:
 
         # Identity / compliance
         self.from_name = ""
-        self.from_address = ""  # ← ADDED: Global from/spoof address
+        self.from_address = ""
         self.reply_to = ""
         self.physical_address = ""
         self.unsubscribe_footer = True
@@ -387,13 +383,10 @@ class CampaignEngine:
 
     def get_from_address(self, cfg: SMTPConfig) -> str:
         """Get the from address - priority: global from_address > spoof_email > email"""
-        # 1. Global custom from address (set in Settings)
         if self.from_address:
             return self.from_address
-        # 2. Per-SMTP spoof email
         if cfg.use_spoof and cfg.spoof_email:
             return cfg.spoof_email
-        # 3. Default: SMTP account email
         return cfg.email
 
     def test_connection(self, index: int) -> Tuple[bool, str]:
@@ -544,7 +537,6 @@ class CampaignEngine:
                                    click_url: str, recipient_name: str) -> Tuple[str, str]:
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
-        # Determine from address and spoof note with priority: Global > Per-SMTP > Account
         if self.from_address:
             spoof_note = f"CUSTOM FROM: {self.from_address}"
             from_display = self.from_address
@@ -561,16 +553,10 @@ class CampaignEngine:
             "NONE": "No Encryption"
         }.get(cfg.security, f"{cfg.security}")
         
-        # Get base URL - use port 80
-        base_url = self.tracking_base_url or "http://localhost:80"
-        
-        # If tracking_base_url is set with port 80, replace with port 80
-        if "80" in base_url:
-            base_url = base_url.replace(":80", ":80")
+        base_url = self.tracking_base_url or f"http://localhost:{APP_PORT}"
         
         tracking_url = f"{base_url}/tracking.html"
         
-        # Build click tracking URL
         click_tracking_url = (
             f"{tracking_url}?type=click"
             f"&tid={tid}"
@@ -579,7 +565,6 @@ class CampaignEngine:
             f"&recipient={recipient_name}"
         )
         
-        # Build pixel tracking URL
         pixel_tracking_url = (
             f"{tracking_url}?mode=pixel"
             f"&tid={tid}"
@@ -951,14 +936,14 @@ Security: {cfg.security}
         return html, plain
 
     def _send_one(self, cfg: SMTPConfig, rec: Recipient, subject: str,
-                  body: str, is_html: bool, campaign_id: str = "") -> SendResult:
+              body: str, is_html: bool, campaign_id: str = "", attachments: List = None) -> SendResult:
         start = time.time()
         pbody = self._personalize(body, rec)
         psubj = self._personalize(subject, rec)
-        tid   = uuid.uuid4().hex
-        base  = self.tracking_base_url.rstrip("/")
+        tid = uuid.uuid4().hex
+        base = self.tracking_base_url.rstrip("/")
         from_addr = self.get_from_address(cfg)
-
+    
         for attempt in range(self.max_retries + 1):
             if self._stop_event.is_set():
                 return SendResult(rec.address, False, "Stopped", datetime.now().isoformat(), cfg.email, 0, tid)
@@ -966,59 +951,106 @@ Security: {cfg.security}
                 conn = create_smtp_connection(cfg.server, cfg.port, cfg.security, self.timeout)
                 if cfg.email and cfg.password:
                     conn.login(cfg.email, cfg.password)
-                
+    
                 msg = MIMEMultipart("alternative")
                 display_name = self.from_name if self.from_name else "CampaignForge"
                 msg["From"] = f"{display_name} <{from_addr}>"
                 msg["To"] = rec.address
                 msg["Subject"] = psubj
-                if self.reply_to: msg["Reply-To"] = self.reply_to
+                if self.reply_to:
+                    msg["Reply-To"] = self.reply_to
                 msg["List-Unsubscribe"] = f"<mailto:{cfg.email}?subject=unsubscribe>"
                 msg["X-Mailer"] = "CampaignForge v3.0"
                 msg["X-CF-Campaign"] = campaign_id
                 msg["X-CF-Tracking"] = tid
                 msg["X-Security"] = cfg.security
-
+    
                 plain = re.sub(r'<[^>]+>', '', pbody) if is_html else pbody
                 plain += self._unsub_plain(rec.address)
                 msg.attach(MIMEText(plain, "plain", "utf-8"))
-
+    
                 if is_html:
                     html = pbody
                     if self.unsubscribe_footer:
                         footer = self._unsub_html(rec.address)
                         html = re.sub(r'</body>', footer + '</body>', html, flags=re.IGNORECASE) \
                                if "</body>" in html.lower() else html + footer
-                    if base: html = self._inject_tracking(html, tid, base)
+                    if base:
+                        html = self._inject_tracking(html, tid, base)
                     msg.attach(MIMEText(html, "html", "utf-8"))
                 elif base:
                     pixel_url = f"{base}/track/open/{tid}"
                     html_wrap = (f'<html><body><pre style="font-family:inherit;white-space:pre-wrap">{pbody}</pre>'
                                  f'<img src="{pixel_url}" width="1" height="1" alt="" style="opacity:0"></body></html>')
                     msg.attach(MIMEText(html_wrap, "html", "utf-8"))
-
+    
+                if attachments:
+                    mixed = MIMEMultipart("mixed")
+                    
+                    for header in ["From", "To", "Subject", "Reply-To", "List-Unsubscribe", 
+                                  "X-Mailer", "X-CF-Campaign", "X-CF-Tracking", "X-Security"]:
+                        if header in msg:
+                            mixed[header] = msg[header]
+                    
+                    alt = MIMEMultipart("alternative")
+                    for part in msg.get_payload():
+                        alt.attach(part)
+                    
+                    mixed.attach(alt)
+                    
+                    for attachment in attachments:
+                        try:
+                            if isinstance(attachment, dict):
+                                filename = attachment.get("filename", "attachment")
+                                content = attachment.get("content", b"")
+                                content_type = attachment.get("content_type", "application/octet-stream")
+                                
+                                if isinstance(content, str):
+                                    try:
+                                        import base64
+                                        content = base64.b64decode(content)
+                                    except Exception:
+                                        content = content.encode("utf-8")
+                                
+                                part = MIMEText(content, "plain", "utf-8")
+                                part.add_header("Content-Type", content_type)
+                                part.add_header("Content-Disposition", f"attachment; filename=\"{filename}\"")
+                                part.add_header("Content-Transfer-Encoding", "base64")
+                                import base64
+                                part.set_payload(base64.b64encode(content).decode("ascii"))
+                                mixed.attach(part)
+                        except Exception as e:
+                            logger.warning(f"Failed to attach file: {e}")
+                    
+                    msg = mixed
+    
                 conn.send_message(msg)
                 conn.quit()
-
+    
                 ms = int((time.time() - start) * 1000)
                 with self._lock:
-                    cfg.sent_count += 1; cfg.last_used = time.time()
+                    cfg.sent_count += 1
+                    cfg.last_used = time.time()
                     cfg.health = min(1.0, cfg.health + 0.05)
                     self.tracking_events[tid] = TrackingEvent(
                         id=tid, smtp_email=cfg.email, smtp_server=cfg.server,
                         sent_to=rec.address, sent_at=datetime.now().isoformat()
                     )
                 return SendResult(rec.address, True, "", datetime.now().isoformat(), cfg.email, ms, tid)
-
+    
             except smtplib.SMTPAuthenticationError:
-                with self._lock: cfg.health = 0.0
+                with self._lock:
+                    cfg.health = 0.0
                 return SendResult(rec.address, False, "Auth failed", datetime.now().isoformat(), cfg.email, 0, tid)
             except smtplib.SMTPRecipientsRefused:
                 return SendResult(rec.address, False, "Recipient refused", datetime.now().isoformat(), cfg.email, 0, tid)
             except Exception as e:
-                if attempt < self.max_retries: time.sleep(1.5 ** attempt); continue
+                if attempt < self.max_retries:
+                    time.sleep(1.5 ** attempt)
+                    continue
                 with self._lock:
-                    cfg.fail_count += 1; cfg.health = max(0.0, cfg.health - 0.15)
+                    cfg.fail_count += 1
+                    cfg.health = max(0.0, cfg.health - 0.15)
                 return SendResult(rec.address, False, str(e)[:120],
                                   datetime.now().isoformat(), cfg.email,
                                   int((time.time()-start)*1000), tid)
@@ -1083,37 +1115,25 @@ Security: {cfg.security}
             time.sleep(0.4)
         return results
 
-    # ─────────────────────────────────────────────
-    # RECIPIENTS - UPDATED load_recipients
-    # ─────────────────────────────────────────────
-    
     def load_recipients(self, lines: List[str], channel: str = "email",
                        carrier_country: str = "USA", carrier_name: str = "AT&T") -> Tuple[int, int]:
-        """Load recipients with phone-to-email conversion for SMS"""
         valid, skipped, new_recs = 0, 0, []
-        
-        # Get the gateway for the selected carrier
         gateway = CARRIER_GATEWAYS.get(carrier_country, {}).get(carrier_name)
         
         for line in lines:
             line = line.strip()
             if not line or line.startswith("#") or line.startswith("//"):
                 continue
-            
-            # Skip headers
             if line.lower().startswith("email") or line.lower().startswith("phone"):
                 continue
             
-            # Extract phone number (digits only)
             digits_only = re.sub(r'\D', '', line)
             is_phone = len(digits_only) >= 10 and re.match(r'^\d+$', digits_only)
             is_email = '@' in line and '.' in line
             
-            # Case 1: SMS or BOTH mode - phone number
             if is_phone and (channel == "sms" or channel == "both"):
                 if gateway:
                     converted = f"{digits_only}@{gateway}"
-                    # Check for duplicates
                     if not any(r.address == converted for r in new_recs) and \
                        not any(r.address == converted for r in self.recipients):
                         new_recs.append(Recipient(
@@ -1127,11 +1147,9 @@ Security: {cfg.security}
                         skipped += 1
                 else:
                     skipped += 1
-            # Case 2: EMAIL or BOTH mode - email address
             elif is_email and (channel == "email" or channel == "both"):
                 address = line
                 name = ""
-                
                 if "," in line:
                     parts = [p.strip() for p in line.split(",")]
                     address = parts[0]
@@ -1153,7 +1171,6 @@ Security: {cfg.security}
                     valid += 1
                 else:
                     skipped += 1
-            # Case 3: EMAIL mode - treat as email (even if it looks like phone)
             elif channel == "email" and line:
                 if not any(r.address == line for r in new_recs) and \
                    not any(r.address == line for r in self.recipients):
@@ -1166,9 +1183,7 @@ Security: {cfg.security}
                     valid += 1
                 else:
                     skipped += 1
-            # Case 4: Try to convert as phone (for BOTH mode)
             elif not is_email and (channel == "sms" or channel == "both"):
-                # Try to extract phone from the line
                 digits = re.sub(r'\D', '', line)
                 if len(digits) >= 10 and gateway:
                     converted = f"{digits}@{gateway}"
@@ -1184,24 +1199,11 @@ Security: {cfg.security}
                     else:
                         skipped += 1
                 else:
-                    # Treat as email
-                    if not any(r.address == line for r in new_recs) and \
-                       not any(r.address == line for r in self.recipients):
-                        new_recs.append(Recipient(
-                            address=line,
-                            name="",
-                            channel="email",
-                            carrier=""
-                        ))
-                        valid += 1
-                    else:
-                        skipped += 1
+                    skipped += 1
             else:
                 skipped += 1
         
-        # Add all new recipients
         self.recipients.extend(new_recs)
-        
         return valid, skipped
 
     def _personalize(self, text: str, rec: Recipient) -> str:
@@ -1247,19 +1249,23 @@ Security: {cfg.security}
 
     def run_campaign(self, cid: str):
         camp = self.campaigns.get(cid)
-        if not camp: return
-        camp.status = "running"; camp.total = len(self.recipients)
-        self._stop_event.clear(); self.active_campaign_id = cid
-
+        if not camp:
+            return
+        camp.status = "running"
+        camp.total = len(self.recipients)
+        self._stop_event.clear()
+        self.active_campaign_id = cid
+    
         def worker(rec):
-            if self._stop_event.is_set(): return None
+            if self._stop_event.is_set():
+                return None
             cfg = self._best_smtp()
             if not cfg:
                 return SendResult(rec.address, False, "No healthy SMTP", datetime.now().isoformat(), "")
-            result = self._send_one(cfg, rec, camp.subject, camp.body, camp.is_html, camp.id)
+            result = self._send_one(cfg, rec, camp.subject, camp.body, camp.is_html, camp.id, camp.attachments)
             time.sleep(self.delay_between)
             return result
-
+    
         done = 0
         with ThreadPoolExecutor(max_workers=self.concurrency) as pool:
             futures = {pool.submit(worker, rec): rec for rec in self.recipients}
@@ -1268,11 +1274,15 @@ Security: {cfg.security}
                 if result:
                     with self._lock:
                         camp.results.append(result)
-                        if result.success: camp.sent += 1; self.session_sent += 1
-                        else: camp.failed += 1; self.session_failed += 1
+                        if result.success:
+                            camp.sent += 1
+                            self.session_sent += 1
+                        else:
+                            camp.failed += 1
+                            self.session_failed += 1
                 done += 1
                 camp.progress = (done / camp.total) * 100
-
+    
         camp.status = "done" if not self._stop_event.is_set() else "paused"
         self.active_campaign_id = None
 
@@ -1293,80 +1303,6 @@ Security: {cfg.security}
                         r.tracking_id])
         return out.getvalue()
 
-# ─────────────────────────────────────────────
-# RECIPIENTS - With Phone Conversion
-# ─────────────────────────────────────────────
-
-def convert_phone_to_email(phone: str, country: str, carrier: str) -> Optional[str]:
-    """Convert phone number to email format using carrier gateway"""
-    clean_phone = re.sub(r'\D', '', phone)
-    gateway = CARRIER_GATEWAYS.get(country, {}).get(carrier)
-    if not gateway or len(clean_phone) < 10:
-        return None
-    return f"{clean_phone}@{gateway}"
-
-def is_phone_number(text: str) -> bool:
-    """Check if text is a phone number (10+ digits)"""
-    digits = re.sub(r'\D', '', text)
-    return len(digits) >= 10 and re.match(r'^\d+$', text)
-
-def load_recipients_from_lines(self, lines: List[str], channel: str = "email",
-                               carrier_country: str = "", carrier_name: str = "") -> Tuple[int, int]:
-    """Load recipients with phone-to-email conversion for SMS"""
-    valid, skipped, new_recs = 0, 0, []
-    
-    for line in lines:
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-        
-        # Check if it's a phone number
-        digits_only = re.sub(r'\D', '', line)
-        is_phone = len(digits_only) >= 10 and re.match(r'^\d+$', digits_only)
-        
-        if is_phone and (channel == "sms" or channel == "both"):
-            # Convert phone to email
-            gateway = CARRIER_GATEWAYS.get(carrier_country, {}).get(carrier_name)
-            if gateway:
-                converted = f"{digits_only}@{gateway}"
-                new_recs.append(Recipient(
-                    address=converted,
-                    name=line,  # Store original phone as name
-                    channel="sms",
-                    carrier=f"{carrier_country}/{carrier_name}"
-                ))
-                valid += 1
-            else:
-                skipped += 1
-        elif "," in line and "@" in line:
-            parts = [p.strip() for p in line.split(",")]
-            if "@" in parts[0]:
-                rec = Recipient(address=parts[0], channel="email")
-                if len(parts) > 1:
-                    rec.name = parts[1]
-                new_recs.append(rec)
-                valid += 1
-            else:
-                skipped += 1
-        elif "@" in line:
-            new_recs.append(Recipient(address=line, channel="email"))
-            valid += 1
-        elif is_phone and channel == "email":
-            # Phone in email mode - treat as email
-            new_recs.append(Recipient(address=line, channel="email"))
-            valid += 1
-        else:
-            skipped += 1
-    
-    # Merge with existing recipients
-    existing_addresses = {r.address for r in self.recipients}
-    for rec in new_recs:
-        if rec.address not in existing_addresses:
-            self.recipients.append(rec)
-            existing_addresses.add(rec.address)
-    
-    return valid, skipped
-
 engine = CampaignEngine()
 
 # ─────────────────────────────────────────────
@@ -1375,7 +1311,6 @@ engine = CampaignEngine()
 
 @app.route("/api/recipients/list", methods=["GET"])
 def get_recipients_list():
-    """Get all loaded recipients with details"""
     return jsonify({
         "success": True,
         "count": len(engine.recipients),
@@ -1394,43 +1329,33 @@ def get_recipients_list():
 
 @app.route("/api/recipients/remove", methods=["POST"])
 def remove_recipient():
-    """Remove a single recipient by address"""
     data = request.json or {}
     address = data.get("address", "")
-    
     if not address:
         return jsonify({"success": False, "message": "No address provided"})
-    
     original_count = len(engine.recipients)
     engine.recipients = [r for r in engine.recipients if r.address != address]
     new_count = len(engine.recipients)
-    
     if new_count < original_count:
         return jsonify({"success": True, "message": f"Removed {address}"})
-    else:
-        return jsonify({"success": False, "message": "Recipient not found"})
+    return jsonify({"success": False, "message": "Recipient not found"})
 
 @app.route("/api/recipients/clear", methods=["POST"])
 def clear_recipients():
-    """Clear all loaded recipients"""
     count = len(engine.recipients)
     engine.recipients = []
     return jsonify({"success": True, "message": f"Cleared {count} recipients"})
 
 @app.route("/api/recipients/search", methods=["POST"])
 def search_recipients():
-    """Search recipients by address or name"""
     data = request.json or {}
     query = data.get("query", "").lower().strip()
-    
     if not query:
         return jsonify({"success": True, "recipients": [asdict(r) for r in engine.recipients]})
-    
     results = [
         r for r in engine.recipients 
         if query in r.address.lower() or (r.name and query in r.name.lower())
     ]
-    
     return jsonify({
         "success": True,
         "count": len(results),
@@ -1479,31 +1404,19 @@ def calculate_spam_score():
     result = SpamScoreCalculator.calculate_score(subject, body, is_html)
     return jsonify(result)
 
-
 # ─────────────────────────────────────────────
 # HELPERS
 # ─────────────────────────────────────────────
 def _base_url() -> str:
-    """Get the base URL for tracking with port 80"""
     if engine.tracking_base_url:
-        # Replace port 80 with 80 if present
-        url = engine.tracking_base_url
-        if ":80" in url:
-            url = url.replace(":80", ":80")
-        return url.rstrip("/")
-    
+        return engine.tracking_base_url.rstrip("/")
     try:
-        # Get the host from the request
         host = request.host
-        # If host contains port 80, replace with 80
-        if ":80" in host:
-            host = host.replace(":80", ":80")
         return f"http://{host}"
     except Exception:
-        return "http://localhost:80"
+        return f"http://localhost:{APP_PORT}"
 
 def get_local_ip():
-    """Get the local IP address of the machine"""
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
@@ -1512,6 +1425,23 @@ def get_local_ip():
         return ip
     except Exception:
         return "127.0.0.1"
+
+def auto_detect_base_url():
+    try:
+        host = request.host
+        if ":" in host:
+            host = host.split(":")[0]
+        if host in ["localhost", "127.0.0.1"]:
+            return f"http://localhost:{APP_PORT}"
+        return f"http://{host}:{APP_PORT}"
+    except Exception:
+        return f"http://localhost:{APP_PORT}"
+
+def fix_tracking_url(url):
+    url = url.rstrip("/")
+    if not url.startswith("http://") and not url.startswith("https://"):
+        url = "http://" + url
+    return url
     
 # ─────────────────────────────────────────────
 # API ROUTES
@@ -1519,18 +1449,15 @@ def get_local_ip():
 
 @app.route("/")
 def index():
-    """Landing page with documentation"""
     return render_template("index.html")
 
 @app.route("/app")
 def app_dashboard():
-    """Main application dashboard"""
     return render_template("app.html")
 
 @app.route("/tracking")
 @app.route("/tracking.html")
 def tracking():
-    """Tracking page for opens and clicks"""
     return render_template("tracking.html")
 
 # ─────────────────────────────────────────────
@@ -1545,7 +1472,6 @@ def get_carriers():
 def get_esp_whitelist():
     return jsonify(ESP_WHITELIST_INFO)
 
-# SMTP - Enhanced
 @app.route("/api/smtp/upload", methods=["POST"])
 def upload_smtp():
     f = request.files.get("file")
@@ -1581,11 +1507,9 @@ def test_one_smtp():
     mode = data.get("mode", "full")
     recipient = data.get("recipient", engine.test_recipient)
     recipient_name = data.get("recipient_name", engine.test_recipient_name)
-    
     if mode == "connect_only":
         ok, msg = engine.test_connection(idx)
         return jsonify({"success": ok, "message": msg, "spam_score": 0})
-    
     ok, msg, tid, spam = engine.send_test_email(idx, recipient, recipient_name, _base_url())
     return jsonify({
         "success": ok,
@@ -1646,18 +1570,12 @@ def upload_recipients():
     f = request.files.get("file")
     if not f:
         return jsonify({"success": False, "message": "No file provided"})
-    
     channel = request.form.get("channel", "email")
     country = request.form.get("country", "USA")
     carrier = request.form.get("carrier", "AT&T")
-    
-    # Read file content
     content = f.read().decode("utf-8", errors="ignore")
     lines = content.splitlines()
-    
-    # Use the updated load_recipients function
     v, sk = engine.load_recipients(lines, channel, country, carrier)
-    
     return jsonify({
         "success": v > 0,
         "valid": v,
@@ -1689,38 +1607,25 @@ def recipient_count():
                     "email": sum(1 for r in engine.recipients if r.channel == "email"),
                     "sms":   sum(1 for r in engine.recipients if r.channel == "sms")})
 
-# ─────────────────────────────────────────────
-# RECIPIENTS - Direct Batch Add API
-# ─────────────────────────────────────────────
-
 @app.route("/api/recipients/add_batch", methods=["POST"])
 def add_recipients_batch():
-    """Directly add recipients (fallback for when upload fails)"""
     data = request.json or {}
     recipients_data = data.get("recipients", [])
-    
     if not recipients_data:
         return jsonify({"success": False, "message": "No recipients provided"})
-    
     added = 0
     skipped = 0
-    
     for r in recipients_data:
         address = r.get("address", "")
         name = r.get("name", "")
         channel = r.get("channel", "email")
         carrier = r.get("carrier", "")
-        
         if not address:
             skipped += 1
             continue
-        
-        # Check for duplicates
         if any(existing.address == address for existing in engine.recipients):
             skipped += 1
             continue
-        
-        # Create recipient
         recipient = Recipient(
             address=address,
             name=name,
@@ -1729,7 +1634,6 @@ def add_recipients_batch():
         )
         engine.recipients.append(recipient)
         added += 1
-    
     return jsonify({
         "success": True,
         "added": added,
@@ -1766,11 +1670,7 @@ def get_tracking_event(tid):
     if not evt: return jsonify({"error": "not found"}), 404
     return jsonify(asdict(evt))
 
-# ============================================
-# TRACKING API ENDPOINTS
-# ============================================
-
-# In-memory tracking store (use database in production)
+# Tracking stats
 tracking_stats = {
     'total_opens': 0,
     'total_clicks': 0,
@@ -1780,13 +1680,11 @@ tracking_stats = {
 
 @app.route("/api/tracking/record", methods=["POST"])
 def record_tracking():
-    """Record a tracking event (open or click)"""
     data = request.json or {}
     event_type = data.get('type', 'open')
     tracking_id = data.get('tid') or data.get('tracking_id', str(uuid.uuid4())[:8])
     device_id = data.get('device_id', 'unknown')
     ip = request.remote_addr
-    
     event = {
         'id': tracking_id,
         'type': event_type,
@@ -1799,17 +1697,13 @@ def record_tracking():
         'recipient': data.get('recipient', ''),
         'url': data.get('url', '')
     }
-    
     with engine._lock:
         tracking_stats['events'].append(event)
-        
         if event_type == 'open':
             tracking_stats['total_opens'] += 1
         elif event_type == 'click':
             tracking_stats['total_clicks'] += 1
-        
         tracking_stats['unique_visitors'].add(device_id)
-    
     return jsonify({
         'success': True,
         'event_id': tracking_id,
@@ -1819,7 +1713,6 @@ def record_tracking():
 
 @app.route("/api/tracking/stats", methods=["GET"])
 def get_tracking_stats():
-    """Get tracking statistics"""
     return jsonify({
         'total_opens': tracking_stats['total_opens'],
         'total_clicks': tracking_stats['total_clicks'],
@@ -1829,7 +1722,6 @@ def get_tracking_stats():
 
 @app.route("/api/tracking/events", methods=["GET"])
 def get_tracking_events():
-    """Get recent tracking events"""
     limit = request.args.get('limit', 100, type=int)
     events = sorted(tracking_stats['events'], key=lambda x: x['timestamp'], reverse=True)[:limit]
     return jsonify({
@@ -1840,7 +1732,6 @@ def get_tracking_events():
 
 @app.route("/api/tracking/clear", methods=["POST"])
 def clear_tracking():
-    """Clear all tracking data"""
     global tracking_stats
     tracking_stats = {
         'total_opens': 0,
@@ -1852,12 +1743,10 @@ def clear_tracking():
 
 @app.route("/api/tracking/campaign/<campaign_id>", methods=["GET"])
 def get_campaign_tracking(campaign_id):
-    """Get tracking stats for a specific campaign"""
     events = [e for e in tracking_stats['events'] if e.get('campaign') == campaign_id]
     opens = len([e for e in events if e['type'] == 'open'])
     clicks = len([e for e in events if e['type'] == 'click'])
     unique = len(set(e.get('device_id', '') for e in events if e.get('device_id')))
-    
     return jsonify({
         'campaign_id': campaign_id,
         'opens': opens,
@@ -1871,13 +1760,44 @@ def get_campaign_tracking(campaign_id):
 def create_campaign():
     data = request.json or {}
     cid = str(uuid.uuid4())[:8]
+    attachments = data.get("attachments", [])
     engine.campaigns[cid] = Campaign(
-        id=cid, name=data.get("name", f"Campaign {cid}"),
-        subject=data.get("subject", ""), body=data.get("body", ""),
-        is_html=data.get("is_html", False), channel=data.get("channel", "email"),
-        created_at=datetime.now().isoformat()
+        id=cid,
+        name=data.get("name", f"Campaign {cid}"),
+        subject=data.get("subject", ""),
+        body=data.get("body", ""),
+        is_html=data.get("is_html", False),
+        channel=data.get("channel", "email"),
+        created_at=datetime.now().isoformat(),
+        attachments=attachments
     )
     return jsonify({"success": True, "campaign_id": cid})
+
+@app.route("/api/campaign/upload_attachment", methods=["POST"])
+def upload_attachment():
+    if "file" not in request.files:
+        return jsonify({"success": False, "message": "No file provided"})
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"success": False, "message": "No file selected"})
+    try:
+        import base64
+        filename = file.filename
+        content_type = file.content_type or "application/octet-stream"
+        content = file.read()
+        content_b64 = base64.b64encode(content).decode("utf-8")
+        size = len(content)
+        return jsonify({
+            "success": True,
+            "attachment": {
+                "filename": filename,
+                "content_type": content_type,
+                "content": content_b64,
+                "size": size
+            }
+        })
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
 
 @app.route("/api/campaign/start/<cid>", methods=["POST"])
 def start_campaign(cid):
@@ -1924,13 +1844,11 @@ def list_campaigns():
 # Settings routes
 @app.route("/api/settings", methods=["GET"])
 def get_settings():
-    # Auto-detect base URL if not set
     tracking_url = engine.tracking_base_url
     if not tracking_url:
         tracking_url = auto_detect_base_url()
     else:
         tracking_url = fix_tracking_url(tracking_url)
-    
     return jsonify({
         "concurrency": engine.concurrency,
         "delay_between": engine.delay_between,
@@ -1938,7 +1856,7 @@ def get_settings():
         "timeout": engine.timeout,
         "daily_limit": engine.daily_limit,
         "from_name": engine.from_name,
-        "from_address": engine.from_address,  # ← ADDED
+        "from_address": engine.from_address,
         "reply_to": engine.reply_to,
         "physical_address": engine.physical_address,
         "unsubscribe_footer": engine.unsubscribe_footer,
@@ -1954,88 +1872,33 @@ def get_settings():
 @app.route("/api/settings", methods=["POST"])
 def save_settings():
     d = request.json or {}
-    
-    # Basic settings
     engine.concurrency        = max(1, min(10, int(d.get("concurrency", 3))))
     engine.delay_between      = max(0.1, float(d.get("delay_between", 0.5)))
     engine.max_retries        = max(0, min(5, int(d.get("max_retries", 2))))
     engine.timeout            = max(5, int(d.get("timeout", 20)))
     engine.daily_limit        = int(d.get("daily_limit", 0))
-    
-    # Identity settings
     engine.from_name          = d.get("from_name", "")
-    engine.from_address       = d.get("from_address", "")  # ← ADDED (global from/spoof)
+    engine.from_address       = d.get("from_address", "")
     engine.reply_to           = d.get("reply_to", "")
     engine.physical_address   = d.get("physical_address", "")
-    
-    # Compliance settings
     engine.unsubscribe_footer = bool(d.get("unsubscribe_footer", True))
     engine.whitelist_mode     = bool(d.get("whitelist_mode", False))
     engine.whitelist_esp      = d.get("whitelist_esp", "Custom SMTP")
-    
-    # Test settings
     engine.test_recipient     = d.get("test_recipient", "")
     engine.test_recipient_name = d.get("test_recipient_name", "")
     engine.auto_test_on_upload = bool(d.get("auto_test_on_upload", True))
     engine.enable_spoofing     = bool(d.get("enable_spoofing", False))
-    
-    # Tracking URL - auto-detect and fix port
     tracking_url = d.get("tracking_base_url", "").rstrip("/")
-    
-    # If no tracking URL provided, auto-detect
     if not tracking_url:
         tracking_url = auto_detect_base_url()
     else:
-        # Fix common port issues
         tracking_url = fix_tracking_url(tracking_url)
-    
     engine.tracking_base_url = tracking_url
-    
     return jsonify({
         "success": True, 
         "message": "Settings saved",
         "tracking_url": tracking_url
     })
-
-def auto_detect_base_url():
-    """Auto-detect the base URL with the correct port"""
-    try:
-        # Get the host from the request
-        host = request.host
-        
-        # Remove port if present and use default port 80
-        if ":" in host:
-            host = host.split(":")[0]
-        
-        # Check if we're on localhost or network
-        if host in ["localhost", "127.0.0.1"]:
-            return f"http://localhost:80"
-        else:
-            return f"http://{host}:80"
-            
-    except Exception:
-        # Fallback to localhost
-        return "http://localhost:80"
-
-def fix_tracking_url(url):
-    """Fix common tracking URL issues"""
-    # Remove trailing slash
-    url = url.rstrip("/")
-    
-    # If no scheme, add http://
-    if not url.startswith("http://") and not url.startswith("https://"):
-        url = "http://" + url
-    
-    # Replace port 80 with 80
-    if ":80" in url:
-        url = url.replace(":80", ":80")
-    
-    # If no port specified, add :80
-    if ":" not in url.replace("http://", "").replace("https://", ""):
-        # Check if it's localhost or IP without port
-        url = url + ":80"
-    
-    return url
 
 @app.route("/api/stats")
 def global_stats():
@@ -2057,9 +1920,6 @@ def global_stats():
     })
 
 if __name__ == "__main__":
-    import socket
-    
-    # Get local IP
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
@@ -2071,16 +1931,18 @@ if __name__ == "__main__":
     print("\n" + "="*70)
     print("CampaignForge v3.0  |  Email & SMS Campaign Platform")
     print("="*70)
-    print(f"Local Access: http://localhost:80")
-    print(f"Network Access: http://{local_ip}:80")
-    print("Tracking URL: http://localhost:80/tracking.html")
+    print(f"Local Access: http://localhost:{APP_PORT}")
+    print(f"Network Access: http://{local_ip}:{APP_PORT}")
+    print(f"Tracking URL: http://localhost:{APP_PORT}/tracking.html")
     print("-"*70)
     print("Features: SMTP Killing • Spoofing • Spam Scoring • TLS/SSL/NONE")
     print("Supported: TLS | SSL | NONE")
     print("="*70)
-    print("Running on port 80 (requires admin/sudo privileges)")
-    print("Linux/Mac: sudo python app.py")
-    print("Windows:   Run as Administrator")
+    print(f"Running on port {APP_PORT}")
+    if APP_PORT == 80:
+        print("Note: Port 80 requires admin/sudo privileges")
+        print("Linux/Mac: sudo python app.py")
+        print("Windows:   Run as Administrator")
     print("="*70 + "\n")
     
-    app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)
+    app.run(debug=True, host='0.0.0.0', port=APP_PORT, threaded=True)
